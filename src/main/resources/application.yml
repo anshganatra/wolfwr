@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: 'jdbc:mariadb://classdb2.csc.ncsu.edu:3306/bvgowda'
+    hikari:
+      driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  application:
+    name: wolfwr
