@@ -25,7 +25,7 @@ public class ProductController {
 
     @Operation(summary = "Create a new Product", description = "Creates a new product given the product name")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product created succesfully"),
+            @ApiResponse(responseCode = "200", description = "Product created successfully"),
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
     @PostMapping
