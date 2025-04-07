@@ -1,7 +1,7 @@
 spring:
   datasource:
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: bvgowda
+    password: 200599971
     url: 'jdbc:mariadb://classdb2.csc.ncsu.edu:3306/bvgowda'
     hikari:
       driver-class-name: org.mariadb.jdbc.Driver
