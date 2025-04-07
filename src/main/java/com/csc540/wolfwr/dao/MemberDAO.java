@@ -43,7 +43,7 @@ public class MemberDAO {
     };
 
     public int save(Member member) {
-        String sqlStatement = "INSERT INTO Members (fname, lname, phone, email, address, dob, doj, membership_level, membership_expiration, registration_staff_ID, active_status, store_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String sqlStatement = "INSERT INTO Members (fname, lname, phone, email, address, dob, doj, membership_level, membership_expiration, registration_staff_ID, active_status, store_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         return jdbcTemplate.update(sqlStatement, member.getFname(), member.getLname(), member.getPhone(), member.getEmail(), member.getAddress(), member.getDob(), member.getDoj(), member.getMemberLevel(), member.getMembershipExpiration(), member.getStaffId(), member.isActiveStatus());
     }
 
