@@ -45,4 +45,10 @@ public class ProductDAO {
         String sqlQuery = "SELECT * FROM Products WHERE product_ID = ?";
         return jdbcTemplate.queryForObject(sqlQuery, productRowMapper, productId);
     }
+
+    // Delete product by product_ID
+    public int delete(Integer productId) {
+        String sql = "DELETE FROM Products WHERE product_ID = ?";
+        return jdbcTemplate.update(sql, productId);
+    }
 }
