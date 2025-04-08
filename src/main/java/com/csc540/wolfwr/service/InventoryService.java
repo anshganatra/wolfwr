@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,5 +57,10 @@ public class InventoryService {
     // Delete an inventory record by shipment_ID
     public void deleteInventory(Integer shipmentId) {
         inventoryDAO.delete(shipmentId);
+    }
+
+    // Get product stock for all stores or for a particular store
+    public List<Map<String, Object>> getProductStock(Integer storeId) {
+        return inventoryDAO.getProductStock(storeId);
     }
 }
