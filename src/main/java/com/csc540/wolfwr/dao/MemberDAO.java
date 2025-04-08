@@ -43,7 +43,7 @@ public class MemberDAO {
     };
 
     public int save(Member member) {
-        String sqlStatement = "INSERT INTO Members (fname, lname, phone, email, address, dob, doj, membership_level, membership_expiration, registration_staff_ID, active_status, store_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String sqlStatement = "INSERT INTO Members (fname, lname, phone, email, address, dob, doj, membership_level, membership_expiration, registration_staff_ID, active_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         return jdbcTemplate.update(sqlStatement, member.getFname(), member.getLname(), member.getPhone(), member.getEmail(), member.getAddress(), member.getDob(), member.getDoj(), member.getMemberLevel(), member.getMembershipExpiration(), member.getStaffId(), member.isActiveStatus());
     }
 
@@ -62,7 +62,7 @@ public class MemberDAO {
     // update member details by member ID
     public int updateMember(Member member){
         String sqlQuery = "UPDATE Members SET fname = ?, lname = ?, phone = ?, email = ?, address = ?, dob = ?, doj = ?, " +
-                "membership_level = ?, activeStatus = ?, membershipExpiration = ?, registration_staff_ID = ?" +
+                "membership_level = ?, active_status = ?, membership_expiration = ?, registration_staff_ID = ? " +
                 "WHERE member_ID = ?";
         return jdbcTemplate.update(sqlQuery, member.getFname(), member.getLname(), member.getPhone(), member.getEmail(),
                 member.getAddress(), member.getDob(), member.getDoj(), member.getMemberLevel(), member.isActiveStatus(),

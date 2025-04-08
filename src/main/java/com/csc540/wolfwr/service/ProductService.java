@@ -42,4 +42,8 @@ public class ProductService {
         }).collect(Collectors.toList());
     }
 
+    public int deleteProduct(Integer productId) {
+        return productDAO.delete(productId);
+    }
+
 }

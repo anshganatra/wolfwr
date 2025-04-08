@@ -55,4 +55,12 @@ public class ProductController {
         List<ProductDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
+
+    @Operation(summary = "Delete a member record", description = "Deletes a member record by its unique ID")
+    @ApiResponse(responseCode = "204", description = "Member record deleted successfully")
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> deleteMember(@PathVariable Integer productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.noContent().build();
+    }
 }
