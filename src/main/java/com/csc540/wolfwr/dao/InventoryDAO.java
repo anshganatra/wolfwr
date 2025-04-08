@@ -72,4 +72,9 @@ public class InventoryDAO {
         String sql = "DELETE FROM Inventory WHERE shipment_ID = ?";
         return jdbcTemplate.update(sql, shipmentId);
     }
+
+    public int updateReturn(Integer quantity, Integer storeId ,Integer shipmentId) {
+        String sql = "UPDATE Inventory SET product_qty = product_qty + ? WHERE store_ID = ? AND shipment_ID = ?";
+        return jdbcTemplate.update(sql, quantity, storeId, shipmentId);
+    }
 }
