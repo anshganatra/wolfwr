@@ -7,7 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class TransactionDAO {
@@ -79,5 +82,33 @@ public class TransactionDAO {
     public int delete(Integer transactionId) {
         String sql = "DELETE FROM Transactions WHERE transaction_ID = ?";
         return jdbcTemplate.update(sql, transactionId);
+    }
+
+    // Get total transactions in a day
+    public List<Map<String, Object>> getTransactionsPerDay(LocalDate date, Integer storeId) {
+        if (Objects.isNull(storeId)) {
+            String sqlQuery = """
+                    SELECT\s
+                        CAST(date AS DATE) AS SaleDate,\s
+                        store_ID AS Store,
+                        SUM(total_price) AS TotalSales
+                    FROM Transactions
+                    WHERE type = 'Purchase' AND CAST(date AS DATE) = ?
+                    GROUP BY CAST(date AS DATE), store_ID;
+                    
+                    """;
+            return jdbcTemplate.queryForList(sqlQuery, date.toString());
+        } else {
+            String sqlQuery = """
+                    SELECT\s
+                        CAST(date AS DATE) AS SaleDate,\s
+                        SUM(total_price) AS TotalSales, \s
+                        store_ID AS Store\s
+                    FROM Transactions
+                    WHERE type = 'Purchase' AND store_ID = ?
+                    GROUP BY CAST(date AS DATE);
+                   \s""";
+            return jdbcTemplate.queryForList(sqlQuery, storeId);
+        }
     }
 }

@@ -6,7 +6,9 @@ import com.csc540.wolfwr.model.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,4 +58,10 @@ public class TransactionService {
     public void deleteTransaction(Integer transactionId) {
         transactionDAO.delete(transactionId);
     }
+
+    // Get transactions per day optionally per store
+    public List<Map<String, Object>> getDailySales(LocalDate date, Integer storeId) {
+        return transactionDAO.getTransactionsPerDay(date, storeId);
+    }
+
 }
