@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,5 +73,14 @@ public class ShipmentController {
     public ResponseEntity<Void> deleteShipment(@PathVariable Integer shipmentId) {
         shipmentService.deleteShipment(shipmentId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Get all expired products", description = "Get all expired shipments posisbly from a store")
+    @ApiResponse(responseCode = "200", description = "Expired products returned successfully")
+    @ApiResponse(responseCode = "404", description = "No shipments found")
+    @GetMapping("/expired-shipments/{storeId}")
+    public ResponseEntity<List<ShipmentDTO>> getExpiredShipments(@PathVariable Integer storeId) {
+        List<ShipmentDTO> expiredShipments = shipmentService.getExpiredShipments(storeId);
+        return ResponseEntity.ok(expiredShipments);
     }
 }

@@ -64,4 +64,15 @@ public class ShipmentService {
     public void deleteShipment(Integer shipmentId) {
         shipmentDAO.delete(shipmentId);
     }
+
+    // Get expired shipments
+    public List<ShipmentDTO> getExpiredShipments(Integer storeId) {
+        List<Shipment> expiredShipments = shipmentDAO.getExpiredShipments(storeId);
+        return expiredShipments.stream().map(shipment -> {
+            ShipmentDTO dto = new ShipmentDTO();
+            BeanUtils.copyProperties(shipment, dto);
+            return dto;
+        }).toList();
+
+    }
 }

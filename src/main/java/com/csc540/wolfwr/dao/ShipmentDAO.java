@@ -86,4 +86,21 @@ public class ShipmentDAO {
         String sql = "DELETE FROM Shipments WHERE shipment_ID = ?";
         return jdbcTemplate.update(sql, shipmentId);
     }
+
+    // Get expired products
+    public List<Shipment> getExpiredShipments(Integer storeId) {
+        String sqlQuery = "SELECT shipment_ID, product_ID, exp_date, quantity  FROM Shipments  WHERE exp_date < CURRENT_DATE AND store_ID = ?";
+        RowMapper<Shipment> customRowMapper = new RowMapper<Shipment>() {
+            @Override
+            public Shipment mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Shipment shipment = new Shipment();
+                shipment.setShipmentId(rs.getInt("shipment_ID"));
+                shipment.setProductId(rs.getInt("product_ID"));
+                shipment.setExpDate(rs.getDate("exp_date").toLocalDate());
+                shipment.setQuantity(rs.getInt("quantity"));
+                return shipment;
+            }
+        };
+        return jdbcTemplate.query(sqlQuery, customRowMapper, storeId);
+    }
 }
