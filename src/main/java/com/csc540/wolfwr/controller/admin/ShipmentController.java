@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Tag(name = "Shipment API", description = "CRUD operations for shipments")
 @RestController
@@ -43,7 +44,7 @@ public class ShipmentController {
     @GetMapping("/{shipmentId}")
     public ResponseEntity<ShipmentDTO> getShipmentById(@PathVariable Integer shipmentId) {
         ShipmentDTO shipmentDTO = shipmentService.getShipmentById(shipmentId);
-        return ResponseEntity.ok(shipmentDTO);
+        return Objects.isNull(shipmentDTO) ? ResponseEntity.notFound().build() : ResponseEntity.ok(shipmentDTO);
     }
 
     @Operation(summary = "Get all shipments", description = "Retrieves all shipment records")

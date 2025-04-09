@@ -1,6 +1,7 @@
 package com.csc540.wolfwr.dao;
 
 import com.csc540.wolfwr.model.Shipment;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;  // Add this import
@@ -106,8 +107,13 @@ public class ShipmentDAO {
 
     // Read by shipment_ID
     public Shipment getShipmentById(Integer shipmentId) {
-        String sql = "SELECT * FROM Shipments WHERE shipment_ID = ?";
-        return jdbcTemplate.queryForObject(sql, shipmentRowMapper, shipmentId);
+        try {
+            String sql = "SELECT * FROM Shipments WHERE shipment_ID = ?";
+            return jdbcTemplate.queryForObject(sql, shipmentRowMapper, shipmentId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+
     }
 
     // Read all shipments

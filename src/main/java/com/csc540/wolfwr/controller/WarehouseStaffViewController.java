@@ -10,7 +10,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @Tag(name = "Warehouse Staff View", description = "All operations performed by warehouse staff")
 @RestController
@@ -32,8 +35,12 @@ public class WarehouseStaffViewController {
             @ApiResponse(responseCode = "200", description = "Inventory processed successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
-    public InventoryDTO processNewInventory(@RequestBody Integer shipmentId) {
-        return inventoryService.processNewInventory(shipmentId);
+    public ResponseEntity<InventoryDTO> processNewInventory(@RequestBody Integer shipmentId) {
+        InventoryDTO response = inventoryService.processNewInventory(shipmentId);
+        if (Objects.isNull(response)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/process-return")
@@ -43,8 +50,9 @@ public class WarehouseStaffViewController {
             @ApiResponse(responseCode = "200", description = "Item returned successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
-    public void processItemReturn(@RequestBody ReturnItemDTO returnItemDTO) {
+    public ResponseEntity<Object> processItemReturn(@RequestBody ReturnItemDTO returnItemDTO) {
         inventoryService.returnItem(returnItemDTO);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/transfer-products")

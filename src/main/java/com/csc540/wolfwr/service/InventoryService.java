@@ -94,6 +94,9 @@ public class InventoryService {
     // add shipment to inventory
     public InventoryDTO processNewInventory(Integer shipmentId) {
         ShipmentDTO linkedShipment = shipmentService.getShipmentById(shipmentId);
+        if (Objects.isNull(linkedShipment)) {
+            return null;
+        }
         InventoryDTO newInventory = new InventoryDTO();
         newInventory.setStoreId(linkedShipment.getStoreId());
         newInventory.setShipmentId(linkedShipment.getShipmentId());

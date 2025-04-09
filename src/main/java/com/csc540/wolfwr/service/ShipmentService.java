@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +38,12 @@ public class ShipmentService {
     // Retrieve shipment by ID
     public ShipmentDTO getShipmentById(Integer shipmentId) {
         Shipment shipment = shipmentDAO.getShipmentById(shipmentId);
-        ShipmentDTO dto = new ShipmentDTO();
-        BeanUtils.copyProperties(shipment, dto);
-        return dto;
+        if (Objects.nonNull(shipment)) {
+            ShipmentDTO dto = new ShipmentDTO();
+            BeanUtils.copyProperties(shipment, dto);
+            return dto;
+        }
+        return null;
     }
 
     // Retrieve all shipments

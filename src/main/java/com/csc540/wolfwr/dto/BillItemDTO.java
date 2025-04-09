@@ -13,10 +13,4 @@ public class BillItemDTO {
 
     @Schema(description = "Quantity purchased", example = "2")
     private Integer quantity;
-
-    @Schema(description = "Unit price", example = "29.99")
-    private BigDecimal price;
-
-    @Schema(description = "Discounted price (if applicable)", example = "24.99")
-    private BigDecimal discountedPrice;
 }
