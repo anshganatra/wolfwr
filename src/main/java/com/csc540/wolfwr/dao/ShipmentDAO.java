@@ -44,14 +44,15 @@ public class ShipmentDAO {
                 shipment.setExpDate(rs.getDate("exp_date").toLocalDate());
             }
             shipment.setQuantity(rs.getInt("quantity"));
+            shipment.setShipmentProcessed(rs.getBoolean("shipment_processed"));
             return shipment;
         }
     };
 
     // Create
     public int save(Shipment shipment) {
-        String sql = "INSERT INTO Shipments (supplier_ID, product_ID, store_ID, buy_price, production_date, shipment_date, exp_date, quantity) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Shipments (supplier_ID, product_ID, store_ID, buy_price, production_date, shipment_date, exp_date, quantity, shipment_processed) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
                 shipment.getSupplierId(),
                 shipment.getProductId(),
@@ -60,13 +61,14 @@ public class ShipmentDAO {
                 shipment.getProductionDate(),
                 shipment.getShipmentDate(),
                 shipment.getExpDate(),
-                shipment.getQuantity());
+                shipment.getQuantity(),
+                shipment.getShipmentProcessed());
     }
 
     // Create a new shipment for the receiving store and return the generated shipment ID
     public int createShipmentForReceivingStore(Shipment shipment) {
-        String sql = "INSERT INTO Shipments (supplier_ID, product_ID, store_ID, buy_price, production_date, shipment_date, exp_date, quantity) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Shipments (supplier_ID, product_ID, store_ID, buy_price, production_date, shipment_date, exp_date, quantity, shipment_processed) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Create KeyHolder to capture generated key
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
@@ -82,6 +84,7 @@ public class ShipmentDAO {
             ps.setDate(6, Date.valueOf(shipment.getShipmentDate()));  // Use Date.valueOf for LocalDate
             ps.setDate(7, Date.valueOf(shipment.getExpDate()));  // Use Date.valueOf for LocalDate
             ps.setInt(8, shipment.getQuantity());
+            ps.setBoolean(9, shipment.getShipmentProcessed());
             return ps;
         }, keyHolder);
 
@@ -110,7 +113,7 @@ public class ShipmentDAO {
 
     // Update shipment by shipment_ID
     public int update(Shipment shipment) {
-        String sql = "UPDATE Shipments SET supplier_ID = ?, product_ID = ?, store_ID = ?, buy_price = ?, production_date = ?, shipment_date = ?, exp_date = ?, quantity = ? " +
+        String sql = "UPDATE Shipments SET supplier_ID = ?, product_ID = ?, store_ID = ?, buy_price = ?, production_date = ?, shipment_date = ?, exp_date = ?, quantity = ? , shipment_processed = ? " +
                 "WHERE shipment_ID = ?";
         return jdbcTemplate.update(sql,
                 shipment.getSupplierId(),
@@ -121,7 +124,8 @@ public class ShipmentDAO {
                 shipment.getShipmentDate(),
                 shipment.getExpDate(),
                 shipment.getQuantity(),
-                shipment.getShipmentId());
+                shipment.getShipmentId(),
+                shipment.getShipmentProcessed());
     }
 
     // Delete shipment by shipment_ID

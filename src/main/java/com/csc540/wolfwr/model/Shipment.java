@@ -16,4 +16,5 @@ public class Shipment {
     private LocalDate shipmentDate;   // shipment_date
     private LocalDate expDate;        // exp_date, nullable
     private Integer quantity;         // quantity > 0
+    private Boolean shipmentProcessed; // shipment_processed
 }
