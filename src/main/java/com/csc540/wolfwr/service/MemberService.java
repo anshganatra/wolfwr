@@ -6,7 +6,11 @@ import com.csc540.wolfwr.model.Member;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MemberService {
@@ -53,5 +57,29 @@ public class MemberService {
 
     public int deleteMember(Integer memberId) {
         return memberDAO.delete(memberId);
+    }
+
+    private final List<String> validReportTypes = Arrays.asList("monthly", "quarterly", "annually");
+
+    public List<Map<String, Object>> getCustomerGrowth(String reportType, LocalDate startDate, LocalDate endDate, Integer storeId) {
+        // Validate reportType
+        if (reportType == null || !validReportTypes.contains(reportType.toLowerCase())) {
+            throw new IllegalArgumentException("Invalid or missing reportType. Must be one of: daily, monthly, quarterly, annually.");
+        }
+
+        // Ensure startDate is provided (the user requested it as required).
+        if (startDate == null) {
+            throw new IllegalArgumentException("startDate is required.");
+        }
+
+        // Default endDate to current date if not provided
+        if (endDate == null) {
+            endDate = LocalDate.now();
+        }
+
+        Date sqlStartDate = Date.valueOf(startDate);
+        Date sqlEndDate = Date.valueOf(endDate);
+
+        return memberDAO.getCustomerGrowth(reportType, sqlStartDate, sqlEndDate, storeId);
     }
 }

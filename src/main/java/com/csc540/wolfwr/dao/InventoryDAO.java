@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -45,6 +46,13 @@ public class InventoryDAO {
                 inventory.getProductQty());
     }
 
+    // Create: Add inventory to the receiving store
+    public int addInventoryToReceivingStore(Integer storeId, Integer shipmentId, Integer productId, BigDecimal marketPrice, Integer productQty) {
+        String sql = "INSERT INTO Inventory (store_ID, shipment_ID, product_ID, market_price, product_qty) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        return jdbcTemplate.update(sql, storeId, shipmentId, productId, marketPrice, productQty);
+    }
+
     // Read: Retrieve an inventory record by shipment_ID (primary key)
     public Inventory getInventoryByShipmentId(Integer shipmentId) {
         String sql = "SELECT * FROM Inventory WHERE shipment_ID = ?";
@@ -75,6 +83,30 @@ public class InventoryDAO {
         return jdbcTemplate.update(sql, shipmentId);
     }
 
+    public List<Map<String, Object>> getLowStockInventory(Integer storeId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT store_ID AS storeId, product_ID AS productId, SUM(product_qty) AS availableQty ")
+                .append("FROM Inventory ");
+
+        // Apply filter conditionally if a storeId is provided.
+        if (storeId != null) {
+            sql.append("WHERE store_ID = ? ");
+            sql.append("GROUP BY store_ID, product_ID ");
+            sql.append("HAVING SUM(product_qty) < 50");
+            return jdbcTemplate.queryForList(sql.toString(), storeId);
+        } else {
+            sql.append("GROUP BY store_ID, product_ID ");
+            sql.append("HAVING SUM(product_qty) < 50");
+            return jdbcTemplate.queryForList(sql.toString());
+        }
+    }
+
+    // Method to reduce the stock from the sending store's inventory
+    public int reduceInventoryStock(Integer storeId, Integer shipmentId, Integer qty) {
+        String sql = "UPDATE Inventory SET product_qty = product_qty - ? WHERE store_ID = ? AND shipment_ID = ?";
+        return jdbcTemplate.update(sql, qty, storeId, shipmentId);
+    }
+
     // Get : Get stock info of all products (within a store)
     public List<Map<String, Object>> getProductStock(Integer storeId) {
         StringBuilder sqlQuery = new StringBuilder("SELECT store_ID, product_ID, SUM(product_qty) AS Current_Stock FROM Inventory ");
@@ -87,4 +119,6 @@ public class InventoryDAO {
         return jdbcTemplate.queryForList(sqlQuery.toString());
 
     }
+
+
 }

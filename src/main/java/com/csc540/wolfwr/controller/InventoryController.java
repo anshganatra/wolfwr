@@ -89,4 +89,18 @@ public class InventoryController {
         List<Map<String, Object>> lowStockInventory = inventoryService.getProductStock(storeId);
         return ResponseEntity.ok(lowStockInventory);
     }
+
+    @Operation(
+            summary = "Get low stock inventory",
+            description = "Retrieves inventory groups where the available quantity (the sum of product_qty for each product in a store) is less than 50. Optionally, filter by a specific store ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Inventory summary retrieved successfully")
+    })
+    @GetMapping("/low-stock")
+    public ResponseEntity<List<Map<String, Object>>> getLowStockInventory(
+            @RequestParam(value = "storeId", required = false) Integer storeId) {
+        List<Map<String, Object>> lowStockInventory = inventoryService.getLowStockInventory(storeId);
+        return ResponseEntity.ok(lowStockInventory);
+    }
 }
