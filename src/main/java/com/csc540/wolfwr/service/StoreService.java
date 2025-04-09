@@ -136,5 +136,15 @@ public class StoreService {
         // Execute the query and return the result as a List of Maps
         return jdbcTemplate.queryForList(sql);
     }
+    
+ // Method to get the storeId associated with the manager
+    public Integer getStoreIdByManagerId(Integer managerId) {
+        return storeDAO.getStoreIdByManagerId(managerId); // Assuming storeDAO has this method
+    }
+
+    // Method to check if the shipment belongs to the store
+    public boolean isShipmentBelongsToStore(Integer shipmentId, Integer storeId) {
+        return shipmentDAO.isShipmentBelongsToStore(shipmentId, storeId);  // Assuming shipmentDAO has this method
+    }
 
 }

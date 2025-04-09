@@ -108,5 +108,11 @@ public class InventoryService {
         shipmentService.updateShipment(linkedShipment);
         return responseDTO;
     }
+    
+ // Modified Service Method
+    public List<Map<String, Object>> getProductInventory(Integer storeId, Integer productId) {
+        return inventoryDAO.getProductStock(storeId, productId);  // Pass both storeId and productId
+    }
+
 
     }
