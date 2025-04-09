@@ -63,4 +63,9 @@ public class InventoryService {
         return inventoryDAO.getLowStockInventory(storeId);
     }
 
+    // Get product stock for all stores or for a particular store
+    public List<Map<String, Object>> getProductStock(Integer storeId) {
+        return inventoryDAO.getProductStock(storeId);
+    }
+
     }

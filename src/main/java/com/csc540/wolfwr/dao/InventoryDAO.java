@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class InventoryDAO {
@@ -99,12 +100,25 @@ public class InventoryDAO {
             return jdbcTemplate.queryForList(sql.toString());
         }
     }
-    
+
     // Method to reduce the stock from the sending store's inventory
     public int reduceInventoryStock(Integer storeId, Integer shipmentId, Integer qty) {
         String sql = "UPDATE Inventory SET product_qty = product_qty - ? WHERE store_ID = ? AND shipment_ID = ?";
         return jdbcTemplate.update(sql, qty, storeId, shipmentId);
     }
-    
-    
+
+    // Get : Get stock info of all products (within a store)
+    public List<Map<String, Object>> getProductStock(Integer storeId) {
+        StringBuilder sqlQuery = new StringBuilder("SELECT store_ID, product_ID, SUM(product_qty) AS Current_Stock FROM Inventory ");
+        if (Objects.nonNull(storeId)) {
+            sqlQuery.append("WHERE store_ID = ? ");
+            sqlQuery.append("GROUP BY store_ID, product_ID");
+            return jdbcTemplate.queryForList(sqlQuery.toString(), storeId);
+        }
+        sqlQuery.append("GROUP BY store_ID, product_ID");
+        return jdbcTemplate.queryForList(sqlQuery.toString());
+
+    }
+
+
 }
