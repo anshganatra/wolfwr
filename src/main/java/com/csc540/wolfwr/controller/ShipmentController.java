@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -74,6 +75,24 @@ public class ShipmentController {
     public ResponseEntity<Void> deleteShipment(@PathVariable Integer shipmentId) {
         shipmentService.deleteShipment(shipmentId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Get itemized bills for suppliers",
+            description = "Retrieves an itemized bill based on optional supplierId, storeId, and shipmentDate parameters. If shipmentDate is not provided, the current date is used."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Itemized bill retrieved successfully")
+    })
+    @GetMapping("/itemized-bill")
+    public ResponseEntity<List<Map<String, Object>>> getItemizedBill(
+            @RequestParam(value = "supplierId", required = false) Integer supplierId,
+            @RequestParam(value = "storeId", required = false) Integer storeId,
+            @RequestParam(value = "shipmentDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate shipmentDate) {
+
+        List<Map<String, Object>> itemizedBill = shipmentService.getItemizedBill(supplierId, storeId, shipmentDate);
+        return ResponseEntity.ok(itemizedBill);
     }
 
     @Operation(summary = "Get all expired products", description = "Get all expired shipments posisbly from a store")
