@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -43,6 +44,13 @@ public class InventoryDAO {
                 inventory.getProductQty());
     }
 
+    // Create: Add inventory to the receiving store
+    public int addInventoryToReceivingStore(Integer storeId, Integer shipmentId, Integer productId, BigDecimal marketPrice, Integer productQty) {
+        String sql = "INSERT INTO Inventory (store_ID, shipment_ID, product_ID, market_price, product_qty) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        return jdbcTemplate.update(sql, storeId, shipmentId, productId, marketPrice, productQty);
+    }
+
     // Read: Retrieve an inventory record by shipment_ID (primary key)
     public Inventory getInventoryByShipmentId(Integer shipmentId) {
         String sql = "SELECT * FROM Inventory WHERE shipment_ID = ?";
@@ -72,4 +80,12 @@ public class InventoryDAO {
         String sql = "DELETE FROM Inventory WHERE shipment_ID = ?";
         return jdbcTemplate.update(sql, shipmentId);
     }
+    
+    // Method to reduce the stock from the sending store's inventory
+    public int reduceInventoryStock(Integer storeId, Integer shipmentId, Integer qty) {
+        String sql = "UPDATE Inventory SET product_qty = product_qty - ? WHERE store_ID = ? AND shipment_ID = ?";
+        return jdbcTemplate.update(sql, qty, storeId, shipmentId);
+    }
+    
+    
 }
