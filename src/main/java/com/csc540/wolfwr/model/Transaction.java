@@ -15,5 +15,4 @@ public class Transaction {
     private Integer cashierId;
     private Integer memberId;
     private Boolean completedStatus;
-    private BigDecimal discountedTotalPrice;
 }
