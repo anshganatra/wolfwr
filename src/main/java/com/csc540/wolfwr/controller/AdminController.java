@@ -2,7 +2,6 @@ package com.csc540.wolfwr.controller;
 
 import com.csc540.wolfwr.dto.BillingStaffDTO;
 import com.csc540.wolfwr.service.BillingStaffService;
-import com.csc540.wolfwr.service.ShipmentService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,29 +9,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Tag(name = "Billing Staff API", description = "CRUD operations for billing staff")
 @RestController
-@RequestMapping("/billing-staff")
-public class BillingStaffController {
+@RequestMapping("/admin")
+public class AdminController {
 
     private final BillingStaffService billingStaffService;
-    private final ShipmentService shipmentService;
 
-    public BillingStaffController(BillingStaffService billingStaffService, ShipmentService shipmentService) {
+    public AdminController(BillingStaffService billingStaffService) {
         this.billingStaffService = billingStaffService;
-        this.shipmentService = shipmentService;
     }
 
     @Operation(summary = "Add a new billing staff entry")
-    @PostMapping
+    @PostMapping("/billing-staff")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Billing Staff created successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input")
@@ -42,7 +36,7 @@ public class BillingStaffController {
     }
 
     @Operation(summary = "Get billing staff by ID")
-    @GetMapping("/{id}")
+    @GetMapping("/billing-staff/{id}")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", 
                      description = "Billing Staff with given ID retrieved successfully"),
@@ -53,14 +47,14 @@ public class BillingStaffController {
     }
 
     @Operation(summary = "Get all billing staff")
-    @GetMapping
+    @GetMapping("/billing-staff")
     @ApiResponse(responseCode = "200", description = "Billing Staff retrieved successfully")
     public ResponseEntity<List<BillingStaffDTO>> getAll() {
         return ResponseEntity.ok(billingStaffService.getAll());
     }
 
     @Operation(summary = "Delete a billing staff entry")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/billing-staff/{id}")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", 
                      description = "Billing Staff with given ID deleted successfully"),
@@ -70,27 +64,4 @@ public class BillingStaffController {
         billingStaffService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    // Generate Supplier Bill
-    @Operation(
-        summary = "Get itemized bills for suppliers",
-        description = "Retrieves an itemized bill based on optional supplierId, storeId, and shipmentDate parameters. If shipmentDate is not provided, the current date is used."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Itemized bill retrieved successfully")
-    })
-    @GetMapping("/itemized-bill")
-    public ResponseEntity<List<Map<String, Object>>> getItemizedBill(
-            @RequestParam(value = "supplierId", required = false) Integer supplierId,
-            @RequestParam(value = "storeId", required = false) Integer storeId,
-            @RequestParam(value = "shipmentDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate shipmentDate) {
-
-        List<Map<String, Object>> itemizedBill = shipmentService.getItemizedBill(supplierId, storeId, shipmentDate);
-        return ResponseEntity.ok(itemizedBill);
-    }
-
-    // Billing Reports
-
-    // Reward Handling
 }
