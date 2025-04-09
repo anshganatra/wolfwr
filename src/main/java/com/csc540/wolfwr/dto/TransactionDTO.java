@@ -20,6 +20,10 @@ public class TransactionDTO {
     @NotNull(message = "Total price is required")
     private BigDecimal totalPrice;
 
+    @Schema(description = "Discounted Total price for the transaction", example = "230")
+    @NotNull(message = "Discounted Total price is required")
+    private BigDecimal discountedTotalPrice;
+
     @Schema(description = "Date and time of the transaction", example = "2025-04-05T13:30:00")
     private LocalDateTime date;
 

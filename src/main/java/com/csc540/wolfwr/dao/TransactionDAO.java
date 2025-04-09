@@ -30,6 +30,7 @@ public class TransactionDAO {
             transaction.setTransactionId(rs.getInt("transaction_ID"));
             transaction.setStoreId(rs.getInt("store_ID"));
             transaction.setTotalPrice(rs.getBigDecimal("total_price"));
+            transaction.setDiscountedTotalPrice(rs.getBigDecimal("discounted_total_price"));
             transaction.setDate(rs.getTimestamp("date").toLocalDateTime());
             transaction.setType(rs.getString("type"));
             transaction.setCashierId(rs.getInt("cashier_ID"));
@@ -41,11 +42,12 @@ public class TransactionDAO {
 
     // Save a new transaction
     public int save(Transaction transaction) {
-        String sql = "INSERT INTO Transactions (store_ID, total_price, date, type, cashier_ID, member_ID, completedStatus) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Transactions (store_ID, total_price, discounted_total_price, date, type, cashier_ID, member_ID, completedStatus) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
                 transaction.getStoreId(),
                 transaction.getTotalPrice(),
+                transaction.getDiscountedTotalPrice(),
                 transaction.getDate(),
                 transaction.getType(),
                 transaction.getCashierId(),
@@ -68,11 +70,12 @@ public class TransactionDAO {
     // Retrieve all transaction from a given member made between two dates
     public List<Map<String, Object>> getTransactionsByMemberAndDates(Integer memberId, LocalDate startDate,
                                                              LocalDate endDate) {
-        String sql = "SELECT transaction_ID, total_price, date FROM Transactions WHERE member_ID = ? " + 
+        String sql = "SELECT transaction_ID, total_price, discounted_total_price, date FROM Transactions WHERE member_ID = ? " +
                      "AND date BETWEEN ? AND ?";
         return jdbcTemplate.queryForList(sql, memberId, startDate, endDate);
     }
 
+    //TODO: need to integrate discounted_total_price in this method
     // Generate a report of sales growth within a given time period. 
     public List<Map<String, Object>> generateSalesGrowthReport(LocalDate currentPeriodStartDate, 
                                                                LocalDate currentPeriodEndDate,
@@ -104,11 +107,12 @@ public class TransactionDAO {
 
     // Update an existing transaction
     public int update(Transaction transaction) {
-        String sql = "UPDATE Transactions SET store_ID = ?, total_price = ?, date = ?, type = ?, cashier_ID = ?, " +
+        String sql = "UPDATE Transactions SET store_ID = ?, total_price = ?, discounted_total_price = ?, date = ?, type = ?, cashier_ID = ?, " +
                      "member_ID = ?, completedStatus = ? WHERE transaction_ID = ?";
         return jdbcTemplate.update(sql,
                 transaction.getStoreId(),
                 transaction.getTotalPrice(),
+                transaction.getDiscountedTotalPrice(),
                 transaction.getDate(),
                 transaction.getType(),
                 transaction.getCashierId(),
@@ -151,7 +155,7 @@ public class TransactionDAO {
         }
 
         sql.append("store_ID AS storeId, ");
-        sql.append("SUM(total_price) AS totalSales ");
+        sql.append("SUM(discounted_total_price) AS totalSales ");
         sql.append("FROM Transactions ");
         sql.append("WHERE type = 'Purchase' AND completedStatus = 1 ");
         sql.append("AND date BETWEEN ? AND ? ");
@@ -193,7 +197,7 @@ public class TransactionDAO {
                     SELECT\s
                         CAST(date AS DATE) AS SaleDate,\s
                         store_ID AS Store,
-                        SUM(total_price) AS TotalSales
+                        SUM(discounted_total_price) AS TotalSales
                     FROM Transactions
                     WHERE type = 'Purchase' AND CAST(date AS DATE) = ?
                     GROUP BY CAST(date AS DATE), store_ID;
@@ -204,7 +208,7 @@ public class TransactionDAO {
             String sqlQuery = """
                     SELECT\s
                         CAST(date AS DATE) AS SaleDate,\s
-                        SUM(total_price) AS TotalSales, \s
+                        SUM(discounted_total_price) AS TotalSales, \s
                         store_ID AS Store\s
                     FROM Transactions
                     WHERE type = 'Purchase' AND store_ID = ?
