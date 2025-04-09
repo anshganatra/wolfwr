@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Tag(name = "Transaction Item API", description = "CRUD operations for transaction items")
 @RestController
-@RequestMapping("/transaction-item")
+@RequestMapping("/admin/transaction-item")
 public class TransactionItemController {
     private final TransactionItemService transactionItemService;
 

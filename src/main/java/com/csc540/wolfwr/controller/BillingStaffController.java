@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Tag(name = "Billing Staff API", description = "CRUD operations for billing staff")
 @RestController
-@RequestMapping("/billing-staff")
+@RequestMapping("/admin/billing-staff")
 public class BillingStaffController {
 
     private final BillingStaffService billingStaffService;

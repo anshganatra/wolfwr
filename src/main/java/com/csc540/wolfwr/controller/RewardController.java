@@ -15,7 +15,7 @@ import java.util.List;
 
 @Tag(name = "Reward API", description = "CRUD operations for rewards")
 @RestController
-@RequestMapping("/rewards")
+@RequestMapping("/admin/rewards")
 public class RewardController {
 
     private final RewardService rewardService;

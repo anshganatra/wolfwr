@@ -14,7 +14,7 @@ import java.util.List;
 
 @Tag(name = "Manager API", description = "CRUD operations for managers")
 @RestController
-@RequestMapping("/managers")
+@RequestMapping("/admin/managers")
 public class ManagerController {
 
     private final ManagerService managerService;

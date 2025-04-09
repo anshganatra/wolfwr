@@ -11,7 +11,7 @@ import java.util.List;
 
 @Tag(name = "Registration Staff API", description = "CRUD operations for registration staff")
 @RestController
-@RequestMapping("/registration-staff")
+@RequestMapping("/admin/registration-staff")
 public class RegistrationStaffController {
 
     private final RegistrationStaffService service;

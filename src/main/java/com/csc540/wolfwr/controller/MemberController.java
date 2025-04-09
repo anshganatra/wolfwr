@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @Tag(name = "Member API", description = "Member-related operations")
-@RequestMapping("/members")
+@RequestMapping("/admin/members")
 public class MemberController {
 
     private final MemberService memberService;

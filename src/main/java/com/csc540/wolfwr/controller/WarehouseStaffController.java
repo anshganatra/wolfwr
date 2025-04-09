@@ -14,7 +14,7 @@ import java.util.List;
 
 @Tag(name = "Warehouse Staff API", description = "CRUD operations for warehouse staff")
 @RestController
-@RequestMapping("/warehousestaff")
+@RequestMapping("/admin/warehouse-staff")
 public class WarehouseStaffController {
     
     private final WarehouseStaffService warehouseStaffService;

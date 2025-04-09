@@ -11,7 +11,7 @@ import java.util.List;
 
 @Tag(name = "Return Transaction API", description = "CRUD operations for return transactions")
 @RestController
-@RequestMapping("/return-transactions")
+@RequestMapping("/admin/return-transactions")
 public class ReturnTransactionController {
 
     private final ReturnTransactionService service;

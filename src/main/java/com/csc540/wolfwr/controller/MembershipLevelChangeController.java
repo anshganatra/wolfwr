@@ -16,7 +16,7 @@ import java.util.List;
 
 @Tag(name = "MembershipLevelChange API", description = "CRUD operations for Membership Level Changes")
 @RestController
-@RequestMapping("/membership-level-change")
+@RequestMapping("/admin/membership-level-change")
 public class MembershipLevelChangeController {
     private final MembershipLevelChangeService membershipLevelChangeService;
 

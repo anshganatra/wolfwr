@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Tag(name = "Inventory API", description = "CRUD operations for inventory records")
 @RestController
-@RequestMapping("/inventory")
+@RequestMapping("/admin/inventory")
 public class InventoryController {
 
     private final InventoryService inventoryService;

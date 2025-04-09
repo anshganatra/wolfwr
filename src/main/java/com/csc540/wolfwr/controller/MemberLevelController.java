@@ -14,7 +14,7 @@ import java.util.List;
 
 @Tag(name = "Member Level API", description = "Operations related to member levels")
 @RestController
-@RequestMapping("/member-levels")
+@RequestMapping("/admin/member-levels")
 public class MemberLevelController {
 
     private final MemberLevelService memberLevelService;

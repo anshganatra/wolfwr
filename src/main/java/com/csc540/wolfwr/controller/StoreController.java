@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Tag(name = "Store API", description = "CRUD operations for stores")
 @RestController
-@RequestMapping("/stores")
+@RequestMapping("/admin/stores")
 public class StoreController {
 
     private final StoreService storeService;

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/admin/products")
 @Tag(name = "Product API", description = "CRUD operations for Products")
 public class ProductController {
 

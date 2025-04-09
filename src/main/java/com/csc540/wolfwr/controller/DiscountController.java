@@ -12,7 +12,7 @@ import java.util.List;
 
 @Tag(name = "Discount API", description = "CRUD operations for discounts")
 @RestController
-@RequestMapping("/discounts")
+@RequestMapping("/admin/discounts")
 public class DiscountController {
 
     private final DiscountService discountService;

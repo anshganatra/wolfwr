@@ -14,7 +14,7 @@ import java.util.List;
 
 @Tag(name = "Supplier API", description = "CRUD operations for suppliers")
 @RestController
-@RequestMapping("/suppliers")
+@RequestMapping("/admin/suppliers")
 public class SupplierController {
 
     private final SupplierService supplierService;
