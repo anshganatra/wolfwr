@@ -90,9 +90,13 @@ public class TransactionDAO {
         + "- SUM(CASE WHEN date BETWEEN ? AND ? THEN total_price ELSE 0 "
         + "END)) / NULLIF(SUM(CASE WHEN date BETWEEN ? AND ? THEN "
         + "total_price ELSE 0 END), 0) * 100, 2) AS sales_growth_percentage FROM Transactions ");
-
+        
+     // Add filters to only include completed transactions and purchases
+        sql.append("WHERE t.completedStatus = 1 "); // Ensure completed transactions only
+        sql.append("AND t.type = 'Purchase' "); // Only consider Purchase transactions
+        
         if (storeId != null) {
-            sql.append("WHERE store_ID = ?");
+            sql.append("AND store_ID = ?");
             return jdbcTemplate.queryForList(sql.toString(), currentPeriodStartDate, currentPeriodEndDate, 
                    previousPeriodStartDate, previousPeriodEndDate, currentPeriodStartDate, 
                    currentPeriodEndDate, previousPeriodStartDate, previousPeriodEndDate, 
@@ -228,6 +232,9 @@ public class TransactionDAO {
         sqlQuery.append("JOIN TransactionItems ti ON t.transaction_ID = ti.transaction_ID ");
         sqlQuery.append("JOIN Shipments s ON ti.product_batch_ID = s.shipment_ID ");
         sqlQuery.append("WHERE t.date BETWEEN ? AND ? ");
+        sqlQuery.append("AND t.completedStatus = 1 "); // Ensure completed transactions only
+        sqlQuery.append("AND t.type = 'Purchase' "); // Consider only Purchase transactions
+
 
         // Filter by store if storeId is provided
         if (storeId != null) {
@@ -241,6 +248,76 @@ public class TransactionDAO {
             return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate, storeId);
         } else {
             return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate);
+        }
+    }
+    
+ // Method to get total revenue (total_sales) for the given period
+    public List<Map<String, Object>> getTotalRevenueReport(Date startDate, Date endDate, Integer storeId) {
+        StringBuilder sqlQuery = new StringBuilder("SELECT t.store_ID, ");
+        sqlQuery.append("SUM(ti.quantity * ti.discounted_price) AS total_sales ");
+        sqlQuery.append("FROM Transactions t ");
+        sqlQuery.append("JOIN TransactionItems ti ON t.transaction_ID = ti.transaction_ID ");
+        sqlQuery.append("WHERE t.date BETWEEN ? AND ? ");
+        sqlQuery.append("AND t.completedStatus = 1 "); // Ensure completed transactions only
+        sqlQuery.append("AND t.type = 'Purchase' "); // Consider only Purchase transactions
+
+        // Filter by store if storeId is provided
+        if (storeId != null) {
+            sqlQuery.append("AND t.store_ID = ? ");
+        }
+
+        sqlQuery.append("GROUP BY t.store_ID");
+
+        // Execute the query with the appropriate parameters
+        if (storeId != null) {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate, storeId);
+        } else {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate);
+        }
+    }
+    
+ // Method to get total purchase amount for a given customer (member) and date range
+    public List<Map<String, Object>> getCustomerActivityReport(Date startDate, Date endDate, Integer memberId) {
+        StringBuilder sqlQuery = new StringBuilder("SELECT t.member_ID, SUM(t.total_price) AS total_purchase_amount, ");
+        sqlQuery.append("COUNT(*) AS number_of_transactions ");  // Count the number of transactions
+        sqlQuery.append("FROM Transactions t ");
+        sqlQuery.append("WHERE t.date BETWEEN ? AND ? ");
+        sqlQuery.append("AND t.completedStatus = 1 "); // Ensure completed transactions only
+        sqlQuery.append("AND t.type = 'Purchase' "); // Consider only Purchase transactions
+
+        // Filter by member (customer) if memberId is provided
+        if (memberId != null) {
+            sqlQuery.append("AND t.member_ID = ? ");
+        }
+
+        sqlQuery.append("GROUP BY t.member_ID");
+
+        // Execute the query with the appropriate parameters
+        if (memberId != null) {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate, memberId);
+        } else {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate);
+        }
+    }
+    
+ // Method to get membership level and reward total for each member with optional year filter
+    public List<Map<String, Object>> getMembershipAndRewards(Integer year) {
+        StringBuilder sqlQuery = new StringBuilder("SELECT m.member_ID, m.membership_level, r.reward_total ");
+        sqlQuery.append("FROM Members m ");
+        sqlQuery.append("JOIN Rewards r ON m.member_ID = r.member_ID ");
+        
+        // Filter by year if the year parameter is provided
+        if (year != null) {
+            sqlQuery.append("WHERE r.year = ? ");
+        }
+
+        sqlQuery.append("ORDER BY m.member_ID");
+
+        // Execute the query with the appropriate parameters
+        if (year != null) {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), year);
+        } else {
+            return jdbcTemplate.queryForList(sqlQuery.toString());
         }
     }
 
