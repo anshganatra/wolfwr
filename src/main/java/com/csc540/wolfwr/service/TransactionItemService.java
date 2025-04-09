@@ -47,6 +47,16 @@ public class TransactionItemService {
                                                                            Integer memberId) {
         return transactionItemDAO.getAllTransactionItemsBetweenTwoDates(startDate, endDate, memberId);
     }
+  
+    // Retrieve all transaction items in a transaction
+    public List<TransactionItemDTO> getAllTransactionItemsFromATransaction(Integer transactionId) {
+        List<TransactionItem> transactionItems = transactionItemDAO.getTransactionItems(transactionId);
+        return transactionItems.stream().map(transactionItem -> {
+            TransactionItemDTO dto = new TransactionItemDTO();
+            BeanUtils.copyProperties(transactionItem, dto);
+            return dto;
+        }).toList();
+    }
 
     // Update an existing transaction items with checks on the transaction and product batch IDs.
     public TransactionItemDTO updateTransactionItem(TransactionItemDTO transactionItemDTO, Integer transactionId, Integer productBatchId) {

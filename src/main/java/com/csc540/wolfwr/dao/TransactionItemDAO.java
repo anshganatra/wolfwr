@@ -60,6 +60,12 @@ public class TransactionItemDAO {
             + "BETWEEN ? AND ?";
         return jdbcTemplate.queryForList(sql, memberId, startDate, endDate);
     }
+  
+    // Read - Get all TransactionItems for a Transaction
+    public List<TransactionItem> getTransactionItems(Integer transactionId) {
+        String sql = "SELECT * FROM TransactionItems WHERE transaction_id = ?";
+        return jdbcTemplate.query(sql, transactionItemRowMapper, transactionId);
+    }
 
     // Update - Update an existing TransactionItem record.
     public int update(TransactionItem transactionItem, Integer transactionId, Integer productBatchId) {
