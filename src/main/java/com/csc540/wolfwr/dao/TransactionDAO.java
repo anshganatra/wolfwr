@@ -213,4 +213,31 @@ public class TransactionDAO {
             return jdbcTemplate.queryForList(sqlQuery, storeId);
         }
     }
+
+ // Method to get total profit by subtracting COGS from sales for a given period
+    public List<Map<String, Object>> getTotalProfitReport(Date startDate, Date endDate, Integer storeId) {
+        StringBuilder sqlQuery = new StringBuilder("SELECT t.store_ID, ");
+        sqlQuery.append("SUM(ti.quantity * ti.discounted_price) AS total_sales, ");
+        sqlQuery.append("SUM(s.buy_price * ti.quantity) AS total_cogs, ");
+        sqlQuery.append("SUM(ti.quantity * ti.discounted_price) - SUM(s.buy_price * ti.quantity) AS total_profit ");
+        sqlQuery.append("FROM Transactions t ");
+        sqlQuery.append("JOIN TransactionItems ti ON t.transaction_ID = ti.transaction_ID ");
+        sqlQuery.append("JOIN Shipments s ON ti.product_batch_ID = s.shipment_ID ");
+        sqlQuery.append("WHERE t.date BETWEEN ? AND ? ");
+
+        // Filter by store if storeId is provided
+        if (storeId != null) {
+            sqlQuery.append("AND t.store_ID = ? ");
+        }
+
+        sqlQuery.append("GROUP BY t.store_ID");
+
+        // Execute the query with the appropriate parameters
+        if (storeId != null) {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate, storeId);
+        } else {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate);
+        }
+    }
+
 }

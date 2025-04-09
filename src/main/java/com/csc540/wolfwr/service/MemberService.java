@@ -64,7 +64,7 @@ public class MemberService {
     public List<Map<String, Object>> getCustomerGrowth(String reportType, LocalDate startDate, LocalDate endDate, Integer storeId) {
         // Validate reportType
         if (reportType == null || !validReportTypes.contains(reportType.toLowerCase())) {
-            throw new IllegalArgumentException("Invalid or missing reportType. Must be one of: daily, monthly, quarterly, annually.");
+            throw new IllegalArgumentException("Invalid or missing reportType. Must be one of: monthly, quarterly, annually.");
         }
 
         // Ensure startDate is provided (the user requested it as required).
