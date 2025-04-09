@@ -3,6 +3,7 @@ package com.csc540.wolfwr.service;
 import com.csc540.wolfwr.dao.RewardDAO;
 import com.csc540.wolfwr.dto.RewardDTO;
 import com.csc540.wolfwr.model.Reward;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,16 @@ public class RewardService {
 
     public List<RewardDTO> getAllRewards() {
         return rewardDAO.getAll().stream().map(reward -> {
+            RewardDTO dto = new RewardDTO();
+            BeanUtils.copyProperties(reward, dto);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    // Returns the Rewards for all Platinum members at the end of the year.
+    public List<RewardDTO> getRewardsByYear(Integer year) {
+        List<Reward> rewards = rewardDAO.getRewardsByYear(year);
+        return rewards.stream().map(reward -> {
             RewardDTO dto = new RewardDTO();
             BeanUtils.copyProperties(reward, dto);
             return dto;

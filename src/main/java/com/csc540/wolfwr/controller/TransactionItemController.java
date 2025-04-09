@@ -10,7 +10,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Transaction Item API", description = "CRUD operations for transaction items")
 @RestController
@@ -39,6 +41,19 @@ public class TransactionItemController {
     public ResponseEntity<List<TransactionItemDTO>> getAllTransactionItems() {
         List<TransactionItemDTO> list = transactionItemService.getAllTransactionItems();
         return ResponseEntity.ok(list);
+    }
+
+    @Operation(summary = "Update an existing transaction item", description = "Updates a transaction item's details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated transaction item"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
+    @GetMapping("/item-report")
+    public ResponseEntity<List<Map<String, Object>>> getAllTransactionItemsBetweenTwoDates(@RequestParam LocalDate startDate,
+                                                                                           @RequestParam LocalDate endDate,
+                                                                                           @RequestParam Integer memberId) {
+        List<Map<String, Object>> transactionItems = transactionItemService.getAllTransactionItemsBetweenTwoDates(startDate, endDate, memberId);
+        return ResponseEntity.ok(transactionItems);
     }
 
     @Operation(summary = "Update an existing transaction item", description = "Updates a transaction item's details")

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ShipmentDAO {
@@ -63,6 +64,12 @@ public class ShipmentDAO {
     public List<Shipment> getAllShipments() {
         String sql = "SELECT * FROM Shipments";
         return jdbcTemplate.query(sql, shipmentRowMapper);
+    }
+
+    // Retrieve all expired products via Shipments
+    public List<Map<String, Object>> identifyExpiredProducts() {
+        String sql = "SELECT shipment_ID, product_ID, store_ID, exp_date, quantity FROM Shipments WHERE exp_date < CURRENT_DATE";
+        return jdbcTemplate.queryForList(sql);
     }
 
     // Update shipment by shipment_ID

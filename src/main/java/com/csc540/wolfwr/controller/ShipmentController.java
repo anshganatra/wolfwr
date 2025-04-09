@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Shipment API", description = "CRUD operations for shipments")
 @RestController
@@ -50,6 +51,14 @@ public class ShipmentController {
     @GetMapping
     public ResponseEntity<List<ShipmentDTO>> getAllShipments() {
         List<ShipmentDTO> shipments = shipmentService.getAllShipments();
+        return ResponseEntity.ok(shipments);
+    }
+
+    @Operation(summary = "Identifies all expired products", description = "Identifies all expired products")
+    @ApiResponse(responseCode = "200", description = "Expired products retrieved")
+    @GetMapping("/expired-products")
+    public ResponseEntity<List<Map<String, Object>>> identifyExpiredProducts() {
+        List<Map<String, Object>> shipments = shipmentService.identifyExpiredProducts();
         return ResponseEntity.ok(shipments);
     }
 

@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +48,10 @@ public class ShipmentService {
             BeanUtils.copyProperties(shipment, dto);
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> identifyExpiredProducts() {
+        return shipmentDAO.identifyExpiredProducts();
     }
 
     // Update an existing shipment with business rule checks

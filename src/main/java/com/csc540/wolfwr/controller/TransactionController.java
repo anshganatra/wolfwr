@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Transaction API", description = "CRUD operations for transactions")
 @RestController
@@ -49,6 +51,34 @@ public class TransactionController {
     @GetMapping
     public ResponseEntity<List<TransactionDTO>> getAllTransactions() {
         List<TransactionDTO> transactions = transactionService.getAllTransactions();
+        return ResponseEntity.ok(transactions);
+    }
+
+    @Operation(summary = "Get transactions by a member between two dates", 
+               description = "Retrieves transactions by a member between two dates")
+    @ApiResponse(responseCode = "200", description = "Transactions retrieved successfully")
+    @GetMapping("/member")
+    public ResponseEntity<List<Map<String, Object>>> getTransactionsByMemberAndDates(@RequestParam Integer memberId,
+                                                                                @RequestParam LocalDate startDate,
+                                                                                @RequestParam LocalDate endDate) {
+        List<Map<String, Object>> transactions = transactionService.getTransactionsByMemberAndDates(memberId, startDate, endDate);
+        return ResponseEntity.ok(transactions);
+    }
+
+    @Operation(summary = "Generates a report of the sales growth", 
+               description = "Retrieves transactions by a member between two dates")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transaction updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
+    @GetMapping("/sales-growth")
+    public ResponseEntity<List<Map<String, Object>>> generateSalesGrowthReport(@RequestParam LocalDate currentPeriodStartDate,
+                                                                               @RequestParam LocalDate currentPeriodEndDate,
+                                                                               @RequestParam LocalDate previousPeriodStartDate,
+                                                                               @RequestParam LocalDate previousPeriodEndDate,
+                                                                               @RequestParam(required = false) Integer storeId) {
+        List<Map<String, Object>> transactions = transactionService.generateSalesGrowthReport(currentPeriodStartDate, currentPeriodEndDate, 
+                                                 previousPeriodStartDate, previousPeriodEndDate, storeId);
         return ResponseEntity.ok(transactions);
     }
 

@@ -2,6 +2,10 @@ package com.csc540.wolfwr.controller;
 
 import com.csc540.wolfwr.dto.RewardDTO;
 import com.csc540.wolfwr.service.RewardService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +37,18 @@ public class RewardController {
     @GetMapping
     public ResponseEntity<List<RewardDTO>> getAllRewards() {
         return ResponseEntity.ok(rewardService.getAllRewards());
+    }
+
+    @Operation(summary = "Get all rewards for a given year", 
+               description = "Gets all rewards for a given year")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Rewards retrieved successfully"),
+        @ApiResponse(responseCode =  "400", description = "Invalid input")
+    })
+    @GetMapping("/{year}")
+    public ResponseEntity<List<RewardDTO>> getRewardsByYear(@PathVariable Integer year) {
+        List<RewardDTO> rewards = rewardService.getRewardsByYear(year);
+        return ResponseEntity.ok(rewards);
     }
 
     @PutMapping("/{memberId}/{year}")
