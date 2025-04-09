@@ -46,4 +46,16 @@ public class RegistrationStaffDAO {
         String sql = "DELETE FROM RegistrationStaff WHERE registration_staff_ID = ?";
         return jdbcTemplate.update(sql, staffId);
     }
+
+    /**
+     * Checks if a registration staff record exists for the given ID.
+     *
+     * @param registrationStaffId the ID to check
+     * @return true if a record exists, false otherwise
+     */
+    public boolean existsById(Integer registrationStaffId) {
+        String sql = "SELECT COUNT(*) FROM RegistrationStaff WHERE registration_staff_ID = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, registrationStaffId);
+        return count != null && count > 0;
+    }
 }

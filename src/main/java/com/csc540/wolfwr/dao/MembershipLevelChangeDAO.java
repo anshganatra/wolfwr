@@ -26,16 +26,18 @@ public class MembershipLevelChangeDAO {
             memberLevelChange.setMemberId(rs.getInt("member_ID"));
             memberLevelChange.setLevelName(rs.getString("level_name"));
             memberLevelChange.setLevelChangeDate(rs.getDate("date").toLocalDate());
+            memberLevelChange.setRegistrationStaffID(rs.getInt("registration_staff_ID"));
             return memberLevelChange;
         }
     };
 
     // Create - Insert a new MembershipLevelChange record
     public int save(MembershipLevelChange membershipLevelChange) {
-        String sql = "INSERT INTO MembershipLevelChange (member_ID, level_name) VALUES (?, ?)";
+        String sql = "INSERT INTO MembershipLevelChange (member_ID, level_name, registration_staff_ID) VALUES (?, ?, ?)";
         return jdbcTemplate.update(sql,
                 membershipLevelChange.getMemberId(),
-                membershipLevelChange.getLevelName());
+                membershipLevelChange.getLevelName(),
+                membershipLevelChange.getRegistrationStaffID());
     }
 
     // Read - Get all MembershipLevelChange records
@@ -46,11 +48,12 @@ public class MembershipLevelChangeDAO {
 
     // Update - Update an existing MembershipLevelChange record.
     public int update(MembershipLevelChange membershipLevelChange, Integer memberId, LocalDate date) {
-        String sql = "UPDATE MembershipLevelChange SET member_ID = ?, level_name = ?, date = ? WHERE member_ID = ? AND date = ?";
+        String sql = "UPDATE MembershipLevelChange SET member_ID = ?, level_name = ?, date = ?, registration_staff_ID = ? WHERE member_ID = ? AND date = ?";
         return jdbcTemplate.update(sql,
                 membershipLevelChange.getMemberId(),
                 membershipLevelChange.getLevelName(),
                 membershipLevelChange.getLevelChangeDate(),
+                membershipLevelChange.getRegistrationStaffID(),
                 memberId,
                 date);
     }
@@ -59,5 +62,12 @@ public class MembershipLevelChangeDAO {
     public int delete(Integer memberId, LocalDate date) {
         String sql = "DELETE FROM MembershipLevelChange WHERE member_ID = ? AND date = ?";
         return jdbcTemplate.update(sql, memberId, date);
+    }
+
+    public MembershipLevelChange getByMemberIdAndDate(Integer memberId, LocalDate date) {
+        String sql = "SELECT * FROM MembershipLevelChange WHERE member_ID = ? AND date = ?";
+        return jdbcTemplate.queryForObject(sql,
+                new Object[]{memberId, java.sql.Date.valueOf(date)},
+                membershipLevelChangeRowMapper);
     }
 }

@@ -9,4 +9,5 @@ public class MembershipLevelChange {
     private Integer memberId;
     private String levelName;
     private LocalDate levelChangeDate;
+    private Integer registrationStaffID;
 }
