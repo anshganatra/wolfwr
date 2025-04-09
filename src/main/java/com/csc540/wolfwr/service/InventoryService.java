@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -72,6 +73,15 @@ public class InventoryService {
         inventoryDAO.delete(shipmentId);
     }
 
+    public List<Map<String, Object>> getLowStockInventory(Integer storeId) {
+        return inventoryDAO.getLowStockInventory(storeId);
+    }
+
+    // Get product stock for all stores or for a particular store
+    public List<Map<String, Object>> getProductStock(Integer storeId) {
+        return inventoryDAO.getProductStock(storeId);
+    }
+
     // Process return
     // TODO make this whole thing an SQL transaction add try catch block
     public void returnItem(Integer ogTid, Integer shipmentId, Integer productId, Integer quantity, Integer cashierId){
@@ -105,4 +115,5 @@ public class InventoryService {
         updatedInventory.setProductQty(updatedInventory.getProductQty()+quantity);
         updateInventory(updatedInventory);
     }
+
     }
