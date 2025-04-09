@@ -70,4 +70,10 @@ public class ShipmentService {
     public List<Map<String, Object>> getItemizedBill(Integer supplierId, Integer storeId, LocalDate shipmentDate) {
         return shipmentDAO.getItemizedBill(supplierId, storeId, shipmentDate);
     }
+
+    // Get expired shipments
+    public List<Map<String, Object>> getExpiredShipments(Integer storeId) {
+        return shipmentDAO.getExpiredShipments(storeId);
+
+    }
 }

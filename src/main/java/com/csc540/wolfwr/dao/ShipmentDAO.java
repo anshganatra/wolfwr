@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class ShipmentDAO {
@@ -65,7 +66,7 @@ public class ShipmentDAO {
     public int createShipmentForReceivingStore(Shipment shipment) {
         String sql = "INSERT INTO Shipments (supplier_ID, product_ID, store_ID, buy_price, production_date, shipment_date, exp_date, quantity) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
+
         // Create KeyHolder to capture generated key
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -153,10 +154,23 @@ public class ShipmentDAO {
 
         return jdbcTemplate.queryForList(sql.toString(), params.toArray());
     }
-    
+
     // Update inventory to reduce stock for the sending store
     public int reduceInventoryStock(Integer storeId, Integer shipmentId, Integer qty) {
         String sql = "UPDATE Inventory SET product_qty = product_qty - ? WHERE store_ID = ? AND shipment_ID = ?";
         return jdbcTemplate.update(sql, qty, storeId, shipmentId);
+    }
+
+    // Get expired products
+    public List<Map<String, Object>> getExpiredShipments(Integer storeId) {
+        String sqlQuery = "";
+        if (Objects.nonNull(storeId)) {
+            sqlQuery = "SELECT shipment_ID, product_ID, exp_date, quantity  FROM Shipments  WHERE exp_date < CURRENT_DATE AND store_ID = ?";
+            return jdbcTemplate.queryForList(sqlQuery, storeId);
+        } else {
+            sqlQuery = "SELECT shipment_ID, product_ID, exp_date, quantity  FROM Shipments  WHERE exp_date < CURRENT_DATE";
+            return jdbcTemplate.queryForList(sqlQuery);
+        }
+
     }
 }

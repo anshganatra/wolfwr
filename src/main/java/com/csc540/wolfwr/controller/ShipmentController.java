@@ -94,4 +94,13 @@ public class ShipmentController {
         List<Map<String, Object>> itemizedBill = shipmentService.getItemizedBill(supplierId, storeId, shipmentDate);
         return ResponseEntity.ok(itemizedBill);
     }
+
+    @Operation(summary = "Get all expired products", description = "Get all expired shipments posisbly from a store")
+    @ApiResponse(responseCode = "200", description = "Expired products returned successfully")
+    @ApiResponse(responseCode = "404", description = "No shipments found")
+    @GetMapping("/expired-shipments")
+    public ResponseEntity<List<Map<String, Object>>> getExpiredShipments(@RequestParam(name = "storeId", required = false) Integer storeId) {
+        List<Map<String, Object>> expiredShipments = shipmentService.getExpiredShipments(storeId);
+        return ResponseEntity.ok(expiredShipments);
+    }
 }
