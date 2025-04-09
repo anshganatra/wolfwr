@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/products")
-@Tag(name = "Product API", description = "CRUD operations for Products")
+@Tag(name = "Admin View for Product API", description = "CRUD operations for Products")
 public class ProductController {
 
     private final ProductService productService;

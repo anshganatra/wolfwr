@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Return Transaction API", description = "CRUD operations for return transactions")
+@Tag(name = "Admin View for Return Transaction API", description = "CRUD operations for return transactions")
 @RestController
 @RequestMapping("/admin/return-transactions")
 public class ReturnTransactionController {

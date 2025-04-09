@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "Transaction Item API", description = "CRUD operations for transaction items")
+@Tag(name = "Admin View for Transaction Item API", description = "CRUD operations for transaction items")
 @RestController
 @RequestMapping("/admin/transaction-item")
 public class TransactionItemController {

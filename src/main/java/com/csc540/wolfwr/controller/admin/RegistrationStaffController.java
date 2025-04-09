@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Registration Staff API", description = "CRUD operations for registration staff")
+@Tag(name = "Admin View for Registration Staff API", description = "CRUD operations for registration staff")
 @RestController
 @RequestMapping("/admin/registration-staff")
 public class RegistrationStaffController {

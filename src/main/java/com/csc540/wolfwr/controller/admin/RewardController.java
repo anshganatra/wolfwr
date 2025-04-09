@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Reward API", description = "CRUD operations for rewards")
+@Tag(name = "Admin View for Reward API", description = "CRUD operations for rewards")
 @RestController
 @RequestMapping("/admin/rewards")
 public class RewardController {

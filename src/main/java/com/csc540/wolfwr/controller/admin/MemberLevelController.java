@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Member Level API", description = "Operations related to member levels")
+@Tag(name = "Admin View for Member Level API", description = "Operations related to member levels")
 @RestController
 @RequestMapping("/admin/member-levels")
 public class MemberLevelController {
