@@ -47,4 +47,8 @@ public class ShipmentDTO {
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be greater than zero")
     private Integer quantity;
+
+    @Schema(description = "Shipment status flag", example = "false", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "Shipment process status is required")
+    private Boolean shipmentProcessed;
 }
