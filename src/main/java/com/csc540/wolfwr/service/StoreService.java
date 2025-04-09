@@ -3,6 +3,7 @@ package com.csc540.wolfwr.service;
 import com.csc540.wolfwr.dao.InventoryDAO;
 import com.csc540.wolfwr.dao.ShipmentDAO;
 import com.csc540.wolfwr.dao.StoreDAO;
+import com.csc540.wolfwr.dao.TransactionalDAO;
 import com.csc540.wolfwr.dto.StoreDTO;
 import com.csc540.wolfwr.dto.TransferDTO;
 import com.csc540.wolfwr.model.Store;
@@ -26,15 +27,17 @@ public class StoreService {
     private final ShipmentDAO shipmentDAO;
     private final InventoryDAO inventoryDAO;
     private final JdbcTemplate jdbcTemplate;
+    private final TransactionalDAO transactionalDAO;
 
     
 
-    public StoreService(StoreDAO storeDAO, ShipmentDAO shipmentDAO, InventoryDAO inventoryDAO, JdbcTemplate jdbcTemplate) {
+    public StoreService(StoreDAO storeDAO, ShipmentDAO shipmentDAO, InventoryDAO inventoryDAO, JdbcTemplate jdbcTemplate, TransactionalDAO transactionalDAO) {
         this.storeDAO = storeDAO;
         this.shipmentDAO = shipmentDAO;
         this.inventoryDAO = inventoryDAO;
         this.jdbcTemplate = jdbcTemplate;
 
+        this.transactionalDAO = transactionalDAO;
     }
 
     // Create a new store
@@ -113,6 +116,11 @@ public class StoreService {
                 transferDTO.getProductId(),
                 sourceShipment.getBuyPrice(),
                 transferDTO.getProductQty());
+    }
+
+    // transfer products between stores - but use conn.commit() and conn.rollback() to implement atomicity
+    public void transferProductsAtomic(TransferDTO dto) {
+        transactionalDAO.transferProductsAtomic(dto);
     }
     
     // Method to calculate inventory turnover for all stores

@@ -87,8 +87,8 @@ public class InventoryService {
     }
 
     // Process return
-    public void returnItem(Integer ogTid, Integer shipmentId, Integer productId, Integer quantity, Integer cashierId){
-        transactionalDAO.processReturn(ogTid, shipmentId, productId, quantity);
+    public void returnItem(ReturnItemDTO returnItemDTO){
+        transactionalDAO.processReturn(returnItemDTO);
     }
 
     // add shipment to inventory
