@@ -108,17 +108,40 @@ public class InventoryDAO {
     }
 
     // Get : Get stock info of all products (within a store)
-    public List<Map<String, Object>> getProductStock(Integer storeId) {
+    public List<Map<String, Object>> getProductStock(Integer storeId, Integer productId) {
         StringBuilder sqlQuery = new StringBuilder("SELECT store_ID, product_ID, SUM(product_qty) AS Current_Stock FROM Inventory ");
-        if (Objects.nonNull(storeId)) {
-            sqlQuery.append("WHERE store_ID = ? ");
-            sqlQuery.append("GROUP BY store_ID, product_ID");
-            return jdbcTemplate.queryForList(sqlQuery.toString(), storeId);
-        }
-        sqlQuery.append("GROUP BY store_ID, product_ID");
-        return jdbcTemplate.queryForList(sqlQuery.toString());
 
+        // Build query based on parameters
+        boolean hasWhereClause = false;
+        if (Objects.nonNull(storeId)) {
+            sqlQuery.append("WHERE store_ID = ?");
+            hasWhereClause = true;
+        }
+
+        if (Objects.nonNull(productId)) {
+            // Add the condition for productId, ensuring we append "AND" if storeId is also used
+            if (hasWhereClause) {
+                sqlQuery.append(" AND product_ID = ?");
+            } else {
+                sqlQuery.append("WHERE product_ID = ?");
+                hasWhereClause = true;
+            }
+        }
+
+        sqlQuery.append(" GROUP BY store_ID, product_ID");
+
+        // Execute the query with the appropriate parameters
+        if (Objects.nonNull(storeId) && Objects.nonNull(productId)) {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), storeId, productId);
+        } else if (Objects.nonNull(storeId)) {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), storeId);
+        } else if (Objects.nonNull(productId)) {
+            return jdbcTemplate.queryForList(sqlQuery.toString(), productId);
+        } else {
+            return jdbcTemplate.queryForList(sqlQuery.toString());
+        }
     }
+
 
     public int updateReturn(Integer quantity, Integer storeId ,Integer shipmentId) {
         String sql = "UPDATE Inventory SET product_qty = product_qty + ? WHERE store_ID = ? AND shipment_ID = ?";

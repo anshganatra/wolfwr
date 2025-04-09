@@ -85,8 +85,9 @@ public class InventoryController {
     })
     @GetMapping("/product-stock")
     public ResponseEntity<List<Map<String, Object>>> getProductStockSummary(
-            @RequestParam(value = "storeId", required = false) Integer storeId) {
-        List<Map<String, Object>> lowStockInventory = inventoryService.getProductStock(storeId);
+            @RequestParam(value = "storeId", required = false) Integer storeId,
+            @RequestParam(value = "productId", required = false) Integer productId) {
+        List<Map<String, Object>> lowStockInventory = inventoryService.getProductStock(storeId,productId);
         return ResponseEntity.ok(lowStockInventory);
     }
 

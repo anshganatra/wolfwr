@@ -101,4 +101,23 @@ public class TransactionService {
     public List<Map<String, Object>> getDailySales(LocalDate date, Integer storeId) {
         return transactionDAO.getTransactionsPerDay(date, storeId);
     }
+
+    // Method to generate the total profit report
+    public List<Map<String, Object>> getProfitReport(String reportType, LocalDate startDate, LocalDate endDate, Integer storeId) {
+        // Validate the startDate and endDate
+        if (startDate == null) {
+            throw new IllegalArgumentException("Start date must be provided");
+        }
+        
+        if (endDate == null) {
+            endDate = LocalDate.now();  // Default to the current date if endDate is not provided
+        }
+
+        // Convert LocalDate to java.sql.Date for the query
+        Date sqlStartDate = Date.valueOf(startDate);
+        Date sqlEndDate = Date.valueOf(endDate);
+
+        // Call the DAO method to get the profit report
+        return transactionDAO.getTotalProfitReport(sqlStartDate, sqlEndDate, storeId);
+    }
 }
