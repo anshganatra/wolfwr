@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class InventoryDAO {
@@ -72,4 +73,25 @@ public class InventoryDAO {
         String sql = "DELETE FROM Inventory WHERE shipment_ID = ?";
         return jdbcTemplate.update(sql, shipmentId);
     }
+
+    public List<Map<String, Object>> getLowStockInventory(Integer storeId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT store_ID AS storeId, product_ID AS productId, SUM(product_qty) AS availableQty ")
+                .append("FROM Inventory ");
+
+        // Apply filter conditionally if a storeId is provided.
+        if (storeId != null) {
+            sql.append("WHERE store_ID = ? ");
+            sql.append("GROUP BY store_ID, product_ID ");
+            sql.append("HAVING SUM(product_qty) < 50");
+            return jdbcTemplate.queryForList(sql.toString(), storeId);
+        } else {
+            sql.append("GROUP BY store_ID, product_ID ");
+            sql.append("HAVING SUM(product_qty) < 50");
+            return jdbcTemplate.queryForList(sql.toString());
+        }
+    }
+
+
+
 }

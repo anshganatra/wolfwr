@@ -5,9 +5,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ShipmentDAO {
@@ -85,5 +89,37 @@ public class ShipmentDAO {
     public int delete(Integer shipmentId) {
         String sql = "DELETE FROM Shipments WHERE shipment_ID = ?";
         return jdbcTemplate.update(sql, shipmentId);
+    }
+
+
+    public List<Map<String, Object>> getItemizedBill(Integer supplierId, Integer storeId, LocalDate shipmentDate) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ")
+                .append("supplier_ID AS supplierId, ")
+                .append("product_ID AS productId, ")
+                .append("store_ID AS storeId, ")
+                .append("quantity, ")
+                .append("buy_price, ")
+                .append("shipment_date AS shipmentDate, ")
+                .append("(quantity * buy_price) AS shipmentCost ")
+                .append("FROM Shipments ");
+
+        List<Object> params = new ArrayList<>();
+
+        LocalDate effectiveDate = (shipmentDate == null) ? LocalDate.now() : shipmentDate;
+        sql.append("WHERE shipment_date = ? ");
+        params.add(java.sql.Date.valueOf(effectiveDate));
+
+        // Add additional filters if provided.
+        if (supplierId != null) {
+            sql.append("AND supplier_ID = ? ");
+            params.add(supplierId);
+        }
+        if (storeId != null) {
+            sql.append("AND store_ID = ? ");
+            params.add(storeId);
+        }
+
+        return jdbcTemplate.queryForList(sql.toString(), params.toArray());
     }
 }

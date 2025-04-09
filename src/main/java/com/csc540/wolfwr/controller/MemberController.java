@@ -7,10 +7,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Tag(name = "Member API", description = "Member-related operations")
@@ -73,5 +76,24 @@ public class MemberController {
     public ResponseEntity<Void> deleteMember(@PathVariable Integer memberId) {
         memberService.deleteMember(memberId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Get customer growth report",
+            description = "Returns how many new active members joined (active_status=1) in a given date range, grouped by day/month/quarter/year. Optional store filter."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Customer growth report retrieved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input parameters")
+    })
+    @GetMapping("/growth-report")
+    public ResponseEntity<List<Map<String, Object>>> getCustomerGrowth(
+            @RequestParam("reportType") String reportType,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "storeId", required = false) Integer storeId) {
+
+        List<Map<String, Object>> report = memberService.getCustomerGrowth(reportType, startDate, endDate, storeId);
+        return ResponseEntity.ok(report);
     }
 }

@@ -6,7 +6,9 @@ import com.csc540.wolfwr.model.Shipment;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,5 +65,9 @@ public class ShipmentService {
     // Delete shipment by ID
     public void deleteShipment(Integer shipmentId) {
         shipmentDAO.delete(shipmentId);
+    }
+
+    public List<Map<String, Object>> getItemizedBill(Integer supplierId, Integer storeId, LocalDate shipmentDate) {
+        return shipmentDAO.getItemizedBill(supplierId, storeId, shipmentDate);
     }
 }
