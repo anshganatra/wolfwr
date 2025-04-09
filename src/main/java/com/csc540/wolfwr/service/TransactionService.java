@@ -28,7 +28,8 @@ public class TransactionService {
     public TransactionDTO createTransaction(TransactionDTO transactionDTO) {
         Transaction transaction = new Transaction();
         BeanUtils.copyProperties(transactionDTO, transaction);
-        transactionDAO.save(transaction);
+        int transactionId = transactionDAO.save(transaction);
+        transactionDTO.setTransactionId(transactionId);
         return transactionDTO;
     }
 

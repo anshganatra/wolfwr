@@ -32,6 +32,15 @@ public class DiscountService {
         return dto;
     }
 
+    public List<DiscountDTO> getByProductIdOrShipmentId(Integer productId, Integer shipmentId) {
+        List<Discount> discounts = discountDAO.getByProductIdOrShipmentId(productId, shipmentId);
+        return discounts.stream().map(d -> {
+            DiscountDTO dto = new DiscountDTO();
+            BeanUtils.copyProperties(d, dto);
+            return dto;
+        }).toList();
+    }
+
     public List<DiscountDTO> getAll() {
         return discountDAO.getAll().stream().map(d -> {
             DiscountDTO dto = new DiscountDTO();

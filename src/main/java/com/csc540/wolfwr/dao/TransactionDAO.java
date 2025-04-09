@@ -3,11 +3,11 @@ package com.csc540.wolfwr.dao;
 import com.csc540.wolfwr.model.Transaction;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,23 +36,40 @@ public class TransactionDAO {
             transaction.setCashierId(rs.getInt("cashier_ID"));
             transaction.setMemberId(rs.getInt("member_ID"));
             transaction.setCompletedStatus(rs.getBoolean("completedStatus"));
+            transaction.setDiscountedTotalPrice(rs.getBigDecimal("discounted_total_price"));
             return transaction;
         }
     };
 
     // Save a new transaction
     public int save(Transaction transaction) {
-        String sql = "INSERT INTO Transactions (store_ID, total_price, discounted_total_price, date, type, cashier_ID, member_ID, completedStatus) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql,
-                transaction.getStoreId(),
-                transaction.getTotalPrice(),
-                transaction.getDiscountedTotalPrice(),
-                transaction.getDate(),
-                transaction.getType(),
-                transaction.getCashierId(),
-                transaction.getMemberId(),
-                transaction.getCompletedStatus());
+        String sql = "INSERT INTO Transactions (store_ID, total_price, date, type, cashier_ID, member_ID, completedStatus, discounted_total_price) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, transaction.getStoreId());
+            ps.setBigDecimal(2, transaction.getTotalPrice());
+            ps.setTimestamp(3, Timestamp.valueOf(transaction.getDate())); // assuming LocalDateTime
+            ps.setString(4, transaction.getType());
+            ps.setObject(5, transaction.getCashierId(), java.sql.Types.INTEGER); // in case nullable
+            ps.setObject(6, transaction.getMemberId(), java.sql.Types.INTEGER);  // in case nullable
+            ps.setBoolean(7, transaction.getCompletedStatus());
+            ps.setBigDecimal(8, transaction.getDiscountedTotalPrice());
+            return ps;
+        }, keyHolder);
+
+        // Set the generated ID back to the transaction object
+        Number generatedId = keyHolder.getKey();
+        if (generatedId != null) {
+            transaction.setTransactionId(generatedId.intValue());
+        } else {
+            throw new RuntimeException("Failed to retrieve generated transaction ID.");
+        }
+
+        return generatedId.intValue();
     }
 
     // Retrieve a transaction by its ID
@@ -76,7 +93,7 @@ public class TransactionDAO {
     }
 
     //TODO: need to integrate discounted_total_price in this method
-    // Generate a report of sales growth within a given time period. 
+    // Generate a report of sales growth within a given time period.
     public List<Map<String, Object>> generateSalesGrowthReport(LocalDate currentPeriodStartDate, 
                                                                LocalDate currentPeriodEndDate,
                                                                LocalDate previousPeriodStartDate,
@@ -90,11 +107,11 @@ public class TransactionDAO {
         + "- SUM(CASE WHEN date BETWEEN ? AND ? THEN total_price ELSE 0 "
         + "END)) / NULLIF(SUM(CASE WHEN date BETWEEN ? AND ? THEN "
         + "total_price ELSE 0 END), 0) * 100, 2) AS sales_growth_percentage FROM Transactions ");
-        
+
      // Add filters to only include completed transactions and purchases
         sql.append("WHERE t.completedStatus = 1 "); // Ensure completed transactions only
         sql.append("AND t.type = 'Purchase' "); // Only consider Purchase transactions
-        
+
         if (storeId != null) {
             sql.append("AND store_ID = ?");
             return jdbcTemplate.queryForList(sql.toString(), currentPeriodStartDate, currentPeriodEndDate, 
@@ -250,7 +267,7 @@ public class TransactionDAO {
             return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate);
         }
     }
-    
+
  // Method to get total revenue (total_sales) for the given period
     public List<Map<String, Object>> getTotalRevenueReport(Date startDate, Date endDate, Integer storeId) {
         StringBuilder sqlQuery = new StringBuilder("SELECT t.store_ID, ");
@@ -275,7 +292,7 @@ public class TransactionDAO {
             return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate);
         }
     }
-    
+
  // Method to get total purchase amount for a given customer (member) and date range
     public List<Map<String, Object>> getCustomerActivityReport(Date startDate, Date endDate, Integer memberId) {
         StringBuilder sqlQuery = new StringBuilder("SELECT t.member_ID, SUM(t.total_price) AS total_purchase_amount, ");
@@ -299,13 +316,13 @@ public class TransactionDAO {
             return jdbcTemplate.queryForList(sqlQuery.toString(), startDate, endDate);
         }
     }
-    
+
  // Method to get membership level and reward total for each member with optional year filter
     public List<Map<String, Object>> getMembershipAndRewards(Integer year) {
         StringBuilder sqlQuery = new StringBuilder("SELECT m.member_ID, m.membership_level, r.reward_total ");
         sqlQuery.append("FROM Members m ");
         sqlQuery.append("JOIN Rewards r ON m.member_ID = r.member_ID ");
-        
+
         // Filter by year if the year parameter is provided
         if (year != null) {
             sqlQuery.append("WHERE r.year = ? ");

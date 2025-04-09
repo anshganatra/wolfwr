@@ -55,6 +55,11 @@ public class DiscountDAO {
         return jdbcTemplate.query(sql, discountRowMapper);
     }
 
+    public List<Discount> getByProductIdOrShipmentId(Integer productId, Integer shipmentId) {
+        String sql = "SELECT * FROM Discounts WHERE product_ID = ? OR shipment_ID = ?";
+        return jdbcTemplate.query(sql, discountRowMapper, productId, shipmentId);
+    }
+
     public int update(Discount discount) {
         String sql = "UPDATE Discounts SET product_ID = ?, shipment_ID = ?, type = ?, value = ?, start_date = ?, end_date = ? WHERE discount_ID = ?";
         return jdbcTemplate.update(sql,
