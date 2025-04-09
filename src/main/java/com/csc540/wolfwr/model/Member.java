@@ -18,4 +18,5 @@ public class Member {
     private boolean activeStatus;
     private LocalDate membershipExpiration;
     private Integer staffId;
+    private Integer registrationStoreId;
 }

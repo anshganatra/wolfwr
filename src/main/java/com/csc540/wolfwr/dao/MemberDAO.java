@@ -41,13 +41,15 @@ public class MemberDAO {
             member.setMembershipExpiration(rs.getDate("membership_expiration").toLocalDate());
             // TODO: check if this should be nullable or not
             member.setStaffId(rs.getInt("registration_staff_ID"));
+            member.setRegistrationStoreId(rs.getInt("registration_store_ID"));
+
             return member;
         }
     };
 
     public int save(Member member) {
-        String sqlStatement = "INSERT INTO Members (fname, lname, phone, email, address, dob, doj, membership_level, membership_expiration, registration_staff_ID, active_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        return jdbcTemplate.update(sqlStatement, member.getFname(), member.getLname(), member.getPhone(), member.getEmail(), member.getAddress(), member.getDob(), member.getDoj(), member.getMemberLevel(), member.getMembershipExpiration(), member.getStaffId(), member.isActiveStatus());
+        String sqlStatement = "INSERT INTO Members (fname, lname, phone, email, address, dob, doj, membership_level, membership_expiration, registration_staff_ID, active_status, registration_store_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        return jdbcTemplate.update(sqlStatement, member.getFname(), member.getLname(), member.getPhone(), member.getEmail(), member.getAddress(), member.getDob(), member.getDoj(), member.getMemberLevel(), member.getMembershipExpiration(), member.getStaffId(), member.isActiveStatus(), member.getRegistrationStoreId());
     }
 
     // get member by ID
@@ -65,11 +67,11 @@ public class MemberDAO {
     // update member details by member ID
     public int updateMember(Member member){
         String sqlQuery = "UPDATE Members SET fname = ?, lname = ?, phone = ?, email = ?, address = ?, dob = ?, doj = ?, " +
-                "membership_level = ?, active_status = ?, membership_expiration = ?, registration_staff_ID = ? " +
+                "membership_level = ?, active_status = ?, membership_expiration = ?, registration_staff_ID = ?, registration_store_ID = ? " +
                 "WHERE member_ID = ?";
         return jdbcTemplate.update(sqlQuery, member.getFname(), member.getLname(), member.getPhone(), member.getEmail(),
                 member.getAddress(), member.getDob(), member.getDoj(), member.getMemberLevel(), member.isActiveStatus(),
-                member.getMembershipExpiration(), member.getStaffId(), member.getMemberId());
+                member.getMembershipExpiration(), member.getStaffId(), member.getMemberId(), member.getRegistrationStoreId());
     }
 
     // delete member details

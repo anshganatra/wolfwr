@@ -44,4 +44,6 @@ public class MemberDTO {
     @Schema(description = "ID of registration staff who processed the membership", example = "3", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer staffId;
 
+    @Schema(description = "ID of registration store where the member signed up", example = "3", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Integer registrationStoreId;
 }
