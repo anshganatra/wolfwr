@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.PreparedStatement;  // Add this import
 import java.sql.Statement;  // Add this import
-import java.sql.Date;  // Add this import
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -50,19 +49,31 @@ public class ShipmentDAO {
     };
 
     // Create
-    public int save(Shipment shipment) {
+    public Shipment save(Shipment shipment) {
         String sql = "INSERT INTO Shipments (supplier_ID, product_ID, store_ID, buy_price, production_date, shipment_date, exp_date, quantity, shipment_processed) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql,
-                shipment.getSupplierId(),
-                shipment.getProductId(),
-                shipment.getStoreId(),
-                shipment.getBuyPrice(),
-                shipment.getProductionDate(),
-                shipment.getShipmentDate(),
-                shipment.getExpDate(),
-                shipment.getQuantity(),
-                shipment.getShipmentProcessed());
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, shipment.getSupplierId());
+            ps.setInt(2, shipment.getProductId());
+            ps.setInt(3, shipment.getStoreId());
+            ps.setBigDecimal(4, shipment.getBuyPrice());
+            ps.setDate(5, Date.valueOf(shipment.getProductionDate()));
+            ps.setDate(6, Date.valueOf(shipment.getShipmentDate()));
+            ps.setDate(7, Date.valueOf(shipment.getExpDate()));
+            ps.setInt(8, shipment.getQuantity());
+            ps.setBoolean(9, shipment.getShipmentProcessed());
+            return ps;
+        }, keyHolder);
+
+        Number generatedId = keyHolder.getKey();
+        if (generatedId != null) {
+            return getShipmentById(generatedId.intValue());
+        } else {
+            throw new RuntimeException("Failed to retrieve generated key after inserting shipment.");
+        }
     }
 
     // Create a new shipment for the receiving store and return the generated shipment ID

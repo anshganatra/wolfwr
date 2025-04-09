@@ -28,8 +28,9 @@ public class ShipmentService {
         }
         Shipment shipment = new Shipment();
         BeanUtils.copyProperties(shipmentDTO, shipment);
-        shipmentDAO.save(shipment);
+        Shipment createdShipment = shipmentDAO.save(shipment);
         // Optionally, set the generated shipmentId back into the DTO if needed.
+        shipmentDTO.setShipmentId(createdShipment.getShipmentId());
         return shipmentDTO;
     }
 

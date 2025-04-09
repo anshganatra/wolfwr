@@ -34,16 +34,33 @@ public class InventoryDAO {
         }
     };
 
+    // helper method
+    public Inventory getInventoryByCompositeKey(int storeId, int shipmentId, int productId) {
+        String sql = "SELECT * FROM Inventory WHERE store_ID = ? AND shipment_ID = ? AND product_ID = ?";
+        return jdbcTemplate.queryForObject(sql, inventoryRowMapper, storeId, shipmentId, productId);
+    }
+
     // Create: Insert a new Inventory record
-    public int save(Inventory inventory) {
+    public Inventory save(Inventory inventory) {
         String sql = "INSERT INTO Inventory (store_ID, shipment_ID, product_ID, market_price, product_qty) " +
                 "VALUES (?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql,
+
+        int rowsAffected = jdbcTemplate.update(sql,
                 inventory.getStoreId(),
                 inventory.getShipmentId(),
                 inventory.getProductId(),
                 inventory.getMarketPrice(),
                 inventory.getProductQty());
+
+        if (rowsAffected == 1) {
+            return getInventoryByCompositeKey(
+                    inventory.getStoreId(),
+                    inventory.getShipmentId(),
+                    inventory.getProductId()
+            );
+        } else {
+            throw new RuntimeException("Failed to insert Inventory record.");
+        }
     }
 
     // Create: Add inventory to the receiving store

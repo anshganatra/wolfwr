@@ -1,10 +1,7 @@
 package com.csc540.wolfwr.service;
 
 import com.csc540.wolfwr.dao.InventoryDAO;
-import com.csc540.wolfwr.dto.InventoryDTO;
-import com.csc540.wolfwr.dto.ReturnTransactionDTO;
-import com.csc540.wolfwr.dto.TransactionDTO;
-import com.csc540.wolfwr.dto.TransactionItemDTO;
+import com.csc540.wolfwr.dto.*;
 import com.csc540.wolfwr.model.Inventory;
 import com.csc540.wolfwr.model.TransactionItem;
 import jakarta.validation.constraints.Null;
@@ -25,12 +22,14 @@ public class InventoryService {
     private final TransactionService transactionService;
     private final TransactionItemService transactionItemService;
     private final ReturnTransactionService returnTransactionService;
+    private final ShipmentService shipmentService;
 
-    public InventoryService(InventoryDAO inventoryDAO, TransactionService transactionService, TransactionItemService transactionItemService, ReturnTransactionService returnTransactionService) {
+    public InventoryService(InventoryDAO inventoryDAO, TransactionService transactionService, TransactionItemService transactionItemService, ReturnTransactionService returnTransactionService, ShipmentService shipmentService) {
         this.inventoryDAO = inventoryDAO;
         this.transactionService = transactionService;
         this.transactionItemService = transactionItemService;
         this.returnTransactionService = returnTransactionService;
+        this.shipmentService = shipmentService;
     }
 
     // Create a new inventory record
@@ -38,8 +37,10 @@ public class InventoryService {
         // Additional business checks can be added here if needed.
         Inventory inventory = new Inventory();
         BeanUtils.copyProperties(inventoryDTO, inventory);
-        inventoryDAO.save(inventory);
-        return inventoryDTO;
+        Inventory newInventory = inventoryDAO.save(inventory);
+        InventoryDTO responseDTO = new InventoryDTO();
+        BeanUtils.copyProperties(newInventory, responseDTO);
+        return responseDTO;
     }
 
     // Retrieve an inventory record by shipment_ID
@@ -114,6 +115,21 @@ public class InventoryService {
         InventoryDTO updatedInventory = getInventoryByShipmentId(shipmentId);
         updatedInventory.setProductQty(updatedInventory.getProductQty()+quantity);
         updateInventory(updatedInventory);
+    }
+
+    // add shipment to inventory
+    public InventoryDTO processNewInventory(Integer shipmentId) {
+        ShipmentDTO linkedShipment = shipmentService.getShipmentById(shipmentId);
+        InventoryDTO newInventory = new InventoryDTO();
+        newInventory.setStoreId(linkedShipment.getStoreId());
+        newInventory.setShipmentId(linkedShipment.getShipmentId());
+        newInventory.setProductId(linkedShipment.getProductId());
+        newInventory.setMarketPrice(linkedShipment.getBuyPrice());
+        newInventory.setProductQty(linkedShipment.getQuantity());
+        InventoryDTO responseDTO = createInventory(newInventory);
+        linkedShipment.setShipmentProcessed(true);
+        shipmentService.updateShipment(linkedShipment);
+        return responseDTO;
     }
 
     }
