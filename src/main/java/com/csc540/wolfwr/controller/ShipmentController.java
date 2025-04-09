@@ -85,24 +85,6 @@ public class ShipmentController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(
-            summary = "Get itemized bills for suppliers",
-            description = "Retrieves an itemized bill based on optional supplierId, storeId, and shipmentDate parameters. If shipmentDate is not provided, the current date is used."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Itemized bill retrieved successfully")
-    })
-    @GetMapping("/itemized-bill")
-    public ResponseEntity<List<Map<String, Object>>> getItemizedBill(
-            @RequestParam(value = "supplierId", required = false) Integer supplierId,
-            @RequestParam(value = "storeId", required = false) Integer storeId,
-            @RequestParam(value = "shipmentDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate shipmentDate) {
-
-        List<Map<String, Object>> itemizedBill = shipmentService.getItemizedBill(supplierId, storeId, shipmentDate);
-        return ResponseEntity.ok(itemizedBill);
-    }
-
     @Operation(summary = "Get all expired products", description = "Get all expired shipments posisbly from a store")
     @ApiResponse(responseCode = "200", description = "Expired products returned successfully")
     @ApiResponse(responseCode = "404", description = "No shipments found")
