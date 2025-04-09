@@ -115,5 +115,11 @@ public class InventoryService {
         updatedInventory.setProductQty(updatedInventory.getProductQty()+quantity);
         updateInventory(updatedInventory);
     }
+    
+ // Modified Service Method
+    public List<Map<String, Object>> getProductInventory(Integer storeId, Integer productId) {
+        return inventoryDAO.getProductStock(storeId, productId);  // Pass both storeId and productId
+    }
+
 
     }

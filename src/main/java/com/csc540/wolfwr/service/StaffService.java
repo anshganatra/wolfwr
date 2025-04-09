@@ -70,4 +70,17 @@ public class StaffService {
     public void deleteStaff(Integer staffId) {
         staffDAO.delete(staffId);
     }
+    
+ // Method to assign a staff member to the manager's store
+    public void assignStaffToManagerStore(Integer managerId, Integer staffId) {
+        // Get the storeId associated with the manager
+        Integer managerStoreId = staffDAO.getStoreIdByStaffId(managerId);
+        
+        // If storeId exists, assign the staff to that store
+        if (managerStoreId != null) {
+            staffDAO.assignStaffToStore(staffId, managerStoreId);
+        } else {
+            throw new IllegalArgumentException("Manager not found or manager does not have a store assigned.");
+        }
+    }
 }

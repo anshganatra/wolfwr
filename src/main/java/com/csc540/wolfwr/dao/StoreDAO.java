@@ -71,4 +71,10 @@ public class StoreDAO {
         String sql = "DELETE FROM Stores WHERE store_ID = ?";
         return jdbcTemplate.update(sql, storeId);
     }
+    
+ // Method to get storeId associated with a given managerId
+    public Integer getStoreIdByManagerId(Integer managerId) {
+        String sql = "SELECT store_ID FROM Stores WHERE manager_ID = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, managerId);
+    }
 }

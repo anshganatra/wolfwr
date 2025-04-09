@@ -184,4 +184,11 @@ public class ShipmentDAO {
         }
 
     }
+    
+ // Method to check if a shipment belongs to a specific store
+    public boolean isShipmentBelongsToStore(Integer shipmentId, Integer storeId) {
+        String sql = "SELECT COUNT(*) FROM Shipments WHERE shipment_ID = ? AND store_ID = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, shipmentId, storeId);
+        return count != null && count > 0; // If count > 0, shipment belongs to the store
+    }
 }

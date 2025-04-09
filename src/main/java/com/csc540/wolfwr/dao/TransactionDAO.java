@@ -278,7 +278,7 @@ public class TransactionDAO {
     
  // Method to get total purchase amount for a given customer (member) and date range
     public List<Map<String, Object>> getCustomerActivityReport(Date startDate, Date endDate, Integer memberId) {
-        StringBuilder sqlQuery = new StringBuilder("SELECT t.member_ID, SUM(t.total_price) AS total_purchase_amount, ");
+        StringBuilder sqlQuery = new StringBuilder("SELECT t.member_ID, SUM(t.discounted_total_price) AS total_purchase_amount, ");
         sqlQuery.append("COUNT(*) AS number_of_transactions ");  // Count the number of transactions
         sqlQuery.append("FROM Transactions t ");
         sqlQuery.append("WHERE t.date BETWEEN ? AND ? ");
