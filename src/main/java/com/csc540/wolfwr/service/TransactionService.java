@@ -6,7 +6,9 @@ import com.csc540.wolfwr.model.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,10 +60,27 @@ public class TransactionService {
     public void deleteTransaction(Integer transactionId) {
         transactionDAO.delete(transactionId);
     }
+    private final List<String> validReportTypes = Arrays.asList("daily", "monthly", "quarterly", "annually");
+
+    public List<Map<String, Object>> getSalesReport(String reportType, LocalDate startDate, LocalDate endDate, Integer storeId) {
+        // Validate reportType: exactly one of the valid options must be provided.
+        if (reportType == null || !validReportTypes.contains(reportType.toLowerCase())) {
+            throw new IllegalArgumentException("Invalid or missing report type. Must be one of: daily, monthly, quarterly, annually.");
+        }
+        // Default endDate to current date if not provided.
+        if (endDate == null) {
+            endDate = LocalDate.now();
+        }
+
+        // Convert LocalDate to java.sql.Date for JDBC.
+        Date sqlStartDate = Date.valueOf(startDate);
+        Date sqlEndDate = Date.valueOf(endDate);
+
+        return transactionDAO.getSalesReport(reportType, sqlStartDate, sqlEndDate, storeId);
+    }
 
     // Get transactions per day optionally per store
     public List<Map<String, Object>> getDailySales(LocalDate date, Integer storeId) {
         return transactionDAO.getTransactionsPerDay(date, storeId);
     }
-
 }

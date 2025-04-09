@@ -1,5 +1,5 @@
 package com.csc540.wolfwr.controller;
-
+import com.csc540.wolfwr.dto.TransferDTO;
 import com.csc540.wolfwr.dto.StoreDTO;
 import com.csc540.wolfwr.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Store API", description = "CRUD operations for stores")
 @RestController
@@ -72,5 +73,17 @@ public class StoreController {
     public ResponseEntity<Void> deleteStore(@PathVariable Integer storeId) {
         storeService.deleteStore(storeId);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PostMapping("/transfer")
+    public ResponseEntity<String> transferProducts(@RequestBody TransferDTO transferDTO) {
+        storeService.transferProducts(transferDTO);
+        return ResponseEntity.ok("Transfer completed successfully");
+    }
+    
+    @GetMapping("/inventory-turnover")
+    public ResponseEntity<List<Map<String, Object>>> getInventoryTurnover() {
+        List<Map<String, Object>> turnoverData = storeService.calculateInventoryTurnover();
+        return ResponseEntity.ok(turnoverData);
     }
 }

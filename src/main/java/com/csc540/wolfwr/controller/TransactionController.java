@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.coyote.Response;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,5 +90,25 @@ public class TransactionController {
                                                                    date) {
         List<Map<String, Object>> dailySales = transactionService.getDailySales(date, storeId);
         return ResponseEntity.ok(dailySales);
+    }
+
+    @Operation(
+            summary = "Generate a sales report",
+            description = "Returns sales report grouped by day/month/quarter/year (based on reportType) along with store_ID and total sales. " +
+                    "Must provide exactly one reportType among daily, monthly, quarterly, or annually. Also accepts startDate, optional endDate, and optional storeId."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sales report generated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input parameters")
+    })
+    @GetMapping("/sales-report")
+    public ResponseEntity<List<Map<String, Object>>> getSalesReport(
+            @RequestParam("reportType") String reportType,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "storeId", required = false) Integer storeId) {
+
+        List<Map<String, Object>> report = transactionService.getSalesReport(reportType, startDate, endDate, storeId);
+        return ResponseEntity.ok(report);
     }
 }

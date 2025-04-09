@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Inventory API", description = "CRUD operations for inventory records")
 @RestController
@@ -72,5 +73,34 @@ public class InventoryController {
     public ResponseEntity<Void> deleteInventory(@PathVariable Integer shipmentId) {
         inventoryService.deleteInventory(shipmentId);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @Operation(
+            summary = "Get current product stocks for a store or for all stores",
+            description = "Retrieves current quantity of each product within a store or within all stores"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product stock summary retrieved successfully")
+    })
+    @GetMapping("/product-stock")
+    public ResponseEntity<List<Map<String, Object>>> getProductStockSummary(
+            @RequestParam(value = "storeId", required = false) Integer storeId) {
+        List<Map<String, Object>> lowStockInventory = inventoryService.getProductStock(storeId);
+        return ResponseEntity.ok(lowStockInventory);
+    }
+
+    @Operation(
+            summary = "Get low stock inventory",
+            description = "Retrieves inventory groups where the available quantity (the sum of product_qty for each product in a store) is less than 50. Optionally, filter by a specific store ID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Inventory summary retrieved successfully")
+    })
+    @GetMapping("/low-stock")
+    public ResponseEntity<List<Map<String, Object>>> getLowStockInventory(
+            @RequestParam(value = "storeId", required = false) Integer storeId) {
+        List<Map<String, Object>> lowStockInventory = inventoryService.getLowStockInventory(storeId);
+        return ResponseEntity.ok(lowStockInventory);
     }
 }
