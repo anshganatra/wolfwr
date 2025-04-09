@@ -78,4 +78,9 @@ public class TransactionService {
 
         return transactionDAO.getSalesReport(reportType, sqlStartDate, sqlEndDate, storeId);
     }
+
+    // Get transactions per day optionally per store
+    public List<Map<String, Object>> getDailySales(LocalDate date, Integer storeId) {
+        return transactionDAO.getTransactionsPerDay(date, storeId);
+    }
 }

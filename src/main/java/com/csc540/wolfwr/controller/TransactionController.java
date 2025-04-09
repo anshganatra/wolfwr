@@ -76,6 +76,22 @@ public class TransactionController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @Operation(
+            summary = "Get sales for a particular day, optionally for a particular store",
+            description = "Get total transaction price for a particular day for all stores, if a store ID is provided fetch it only for the given store"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Daily sales summary retrieved successfully")
+    })
+    @GetMapping("/daily-sales")
+
+    public ResponseEntity<List<Map<String, Object>>> getDailySales(@RequestParam(value = "storeId", required = false) Integer storeId, @RequestParam(value = "date", required = true) LocalDate
+                                                                   date) {
+        List<Map<String, Object>> dailySales = transactionService.getDailySales(date, storeId);
+        return ResponseEntity.ok(dailySales);
+    }
+
     @Operation(
             summary = "Generate a sales report",
             description = "Returns sales report grouped by day/month/quarter/year (based on reportType) along with store_ID and total sales. " +
