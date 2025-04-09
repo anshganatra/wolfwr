@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,13 +67,8 @@ public class ShipmentService {
     }
 
     // Get expired shipments
-    public List<ShipmentDTO> getExpiredShipments(Integer storeId) {
-        List<Shipment> expiredShipments = shipmentDAO.getExpiredShipments(storeId);
-        return expiredShipments.stream().map(shipment -> {
-            ShipmentDTO dto = new ShipmentDTO();
-            BeanUtils.copyProperties(shipment, dto);
-            return dto;
-        }).toList();
+    public List<Map<String, Object>> getExpiredShipments(Integer storeId) {
+        return shipmentDAO.getExpiredShipments(storeId);
 
     }
 }

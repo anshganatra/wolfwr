@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class ShipmentDAO {
@@ -88,19 +90,15 @@ public class ShipmentDAO {
     }
 
     // Get expired products
-    public List<Shipment> getExpiredShipments(Integer storeId) {
-        String sqlQuery = "SELECT shipment_ID, product_ID, exp_date, quantity  FROM Shipments  WHERE exp_date < CURRENT_DATE AND store_ID = ?";
-        RowMapper<Shipment> customRowMapper = new RowMapper<Shipment>() {
-            @Override
-            public Shipment mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Shipment shipment = new Shipment();
-                shipment.setShipmentId(rs.getInt("shipment_ID"));
-                shipment.setProductId(rs.getInt("product_ID"));
-                shipment.setExpDate(rs.getDate("exp_date").toLocalDate());
-                shipment.setQuantity(rs.getInt("quantity"));
-                return shipment;
-            }
-        };
-        return jdbcTemplate.query(sqlQuery, customRowMapper, storeId);
+    public List<Map<String, Object>> getExpiredShipments(Integer storeId) {
+        String sqlQuery = "";
+        if (Objects.nonNull(storeId)) {
+            sqlQuery = "SELECT shipment_ID, product_ID, exp_date, quantity  FROM Shipments  WHERE exp_date < CURRENT_DATE AND store_ID = ?";
+            return jdbcTemplate.queryForList(sqlQuery, storeId);
+        } else {
+            sqlQuery = "SELECT shipment_ID, product_ID, exp_date, quantity  FROM Shipments  WHERE exp_date < CURRENT_DATE";
+            return jdbcTemplate.queryForList(sqlQuery);
+        }
+
     }
 }
