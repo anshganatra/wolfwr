@@ -1,4 +1,4 @@
-package com.csc540.wolfwr.controller;
+package com.csc540.wolfwr.controller.admin;
 
 import com.csc540.wolfwr.dto.RegistrationStaffDTO;
 import com.csc540.wolfwr.service.RegistrationStaffService;

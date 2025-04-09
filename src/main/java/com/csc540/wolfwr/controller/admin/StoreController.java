@@ -1,4 +1,4 @@
-package com.csc540.wolfwr.controller;
+package com.csc540.wolfwr.controller.admin;
 import com.csc540.wolfwr.dto.TransferDTO;
 import com.csc540.wolfwr.dto.StoreDTO;
 import com.csc540.wolfwr.service.StoreService;
