@@ -21,4 +21,8 @@ public class MembershipLevelChangeDTO {
     @Schema(description = "Level Change date", example = "2025-03-05", required = true)
     @NotNull(message = "Level change date is required")
     private LocalDate levelChangeDate;
+
+    @Schema(description = "Registration Staff ID facilitating the change", example = "2", required = true)
+    @NotNull(message = "Registration Staff ID is required")
+    private Integer registrationStaffID;
 }

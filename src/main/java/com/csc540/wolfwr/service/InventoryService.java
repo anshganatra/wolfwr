@@ -82,8 +82,8 @@ public class InventoryService {
     }
 
     // Get product stock for all stores or for a particular store
-    public List<Map<String, Object>> getProductStock(Integer storeId) {
-        return inventoryDAO.getProductStock(storeId);
+    public List<Map<String, Object>> getProductStock(Integer storeId, Integer productId) {
+        return inventoryDAO.getProductStock(storeId,productId);
     }
 
     // Process return

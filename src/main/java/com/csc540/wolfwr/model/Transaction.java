@@ -9,6 +9,7 @@ public class Transaction {
     private Integer transactionId;
     private Integer storeId;
     private BigDecimal totalPrice;
+    private BigDecimal discountedTotalPrice;
     private LocalDateTime date;
     private String type;
     private Integer cashierId;

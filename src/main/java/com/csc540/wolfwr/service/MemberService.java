@@ -25,8 +25,11 @@ public class MemberService {
     public MemberDTO createMember(MemberDTO memberDTO){
         Member member = new Member();
         BeanUtils.copyProperties(memberDTO, member);
-        memberDAO.save(member);
-        return memberDTO;
+        Integer generatedId = memberDAO.save(member);
+        Member savedMember = memberDAO.getMemberById(generatedId);
+        MemberDTO result = new MemberDTO();
+        BeanUtils.copyProperties(savedMember, result);
+        return result;
     }
 
     // get member by ID
@@ -52,7 +55,11 @@ public class MemberService {
         Member member = new Member();
         BeanUtils.copyProperties(memberDTO, member);
         memberDAO.updateMember(member);
-        return memberDTO;
+
+        Member savedMember = memberDAO.getMemberById(memberDTO.getMemberId());
+        MemberDTO result = new MemberDTO();
+        BeanUtils.copyProperties(savedMember, result);
+        return result;
     }
 
     public int deleteMember(Integer memberId) {
@@ -64,7 +71,7 @@ public class MemberService {
     public List<Map<String, Object>> getCustomerGrowth(String reportType, LocalDate startDate, LocalDate endDate, Integer storeId) {
         // Validate reportType
         if (reportType == null || !validReportTypes.contains(reportType.toLowerCase())) {
-            throw new IllegalArgumentException("Invalid or missing reportType. Must be one of: daily, monthly, quarterly, annually.");
+            throw new IllegalArgumentException("Invalid or missing reportType. Must be one of: monthly, quarterly, annually.");
         }
 
         // Ensure startDate is provided (the user requested it as required).

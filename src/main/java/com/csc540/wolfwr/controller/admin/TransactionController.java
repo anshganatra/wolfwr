@@ -107,7 +107,7 @@ public class TransactionController {
 
     @Operation(
             summary = "Get sales for a particular day, optionally for a particular store",
-            description = "Get total transaction price for a particular day for all stores, if a store ID is provided fetch it only for the given store"
+            description = "Get total discounted transaction price for a particular day for all stores, if a store ID is provided fetch it only for the given store"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Daily sales summary retrieved successfully")

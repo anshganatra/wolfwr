@@ -43,4 +43,8 @@ public class RegistrationStaffService {
     public void delete(Integer staffId) {
         dao.delete(staffId);
     }
+
+    public boolean existsById(Integer registrationStaffId) {
+        return dao.existsById(registrationStaffId);
+    }
 }

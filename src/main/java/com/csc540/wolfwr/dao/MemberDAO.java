@@ -5,11 +5,11 @@ import com.csc540.wolfwr.model.Member;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +47,30 @@ public class MemberDAO {
         }
     };
 
-    public int save(Member member) {
-        String sqlStatement = "INSERT INTO Members (fname, lname, phone, email, address, dob, doj, membership_level, membership_expiration, registration_staff_ID, active_status, registration_store_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        return jdbcTemplate.update(sqlStatement, member.getFname(), member.getLname(), member.getPhone(), member.getEmail(), member.getAddress(), member.getDob(), member.getDoj(), member.getMemberLevel(), member.getMembershipExpiration(), member.getStaffId(), member.isActiveStatus(), member.getRegistrationStoreId());
+    public Integer save(Member member) {
+        String sql = "INSERT INTO Members (fname, lname, phone, email, address, dob, doj, membership_level, membership_expiration, registration_staff_ID, active_status, registration_store_ID) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, member.getFname());
+            ps.setString(2, member.getLname());
+            ps.setString(3, member.getPhone());
+            ps.setString(4, member.getEmail());
+            ps.setString(5, member.getAddress());
+            ps.setDate(6, Date.valueOf(member.getDob()));
+            ps.setDate(7, Date.valueOf(member.getDoj()));
+            ps.setString(8, member.getMemberLevel());
+            ps.setDate(9, Date.valueOf(member.getMembershipExpiration()));
+            ps.setInt(10, member.getStaffId());
+            ps.setBoolean(11, member.isActiveStatus());
+            ps.setInt(12, member.getRegistrationStoreId());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
     }
 
     // get member by ID
@@ -65,13 +86,26 @@ public class MemberDAO {
     }
 
     // update member details by member ID
-    public int updateMember(Member member){
+    public int updateMember(Member member) {
         String sqlQuery = "UPDATE Members SET fname = ?, lname = ?, phone = ?, email = ?, address = ?, dob = ?, doj = ?, " +
                 "membership_level = ?, active_status = ?, membership_expiration = ?, registration_staff_ID = ?, registration_store_ID = ? " +
                 "WHERE member_ID = ?";
-        return jdbcTemplate.update(sqlQuery, member.getFname(), member.getLname(), member.getPhone(), member.getEmail(),
-                member.getAddress(), member.getDob(), member.getDoj(), member.getMemberLevel(), member.isActiveStatus(),
-                member.getMembershipExpiration(), member.getStaffId(), member.getMemberId(), member.getRegistrationStoreId());
+        return jdbcTemplate.update(
+                sqlQuery,
+                member.getFname(),                    // 1
+                member.getLname(),                    // 2
+                member.getPhone(),                    // 3
+                member.getEmail(),                    // 4
+                member.getAddress(),                  // 5
+                member.getDob(),                      // 6
+                member.getDoj(),                      // 7
+                member.getMemberLevel(),              // 8
+                member.isActiveStatus(),              // 9
+                member.getMembershipExpiration(),     // 10
+                member.getStaffId(),                  // 11: registration_staff_ID
+                member.getRegistrationStoreId(),      // 12: registration_store_ID
+                member.getMemberId()                  // 13: WHERE member_ID = ?
+        );
     }
 
     // delete member details
