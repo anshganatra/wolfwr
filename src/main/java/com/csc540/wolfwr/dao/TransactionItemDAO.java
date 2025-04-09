@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class TransactionItemDAO {
@@ -48,6 +50,17 @@ public class TransactionItemDAO {
         return jdbcTemplate.query(sql, transactionItemRowMapper);
     }
 
+    // Retrieve all TransactionItems Purchased by a Customer between two dates
+    public List<Map<String, Object>> getAllTransactionItemsBetweenTwoDates(LocalDate startDate,
+                                                                           LocalDate endDate,
+                                                                           Integer memberId) {
+        String sql = "SELECT ti.transaction_ID, ti.product_batch_ID, ti.discounted_price, ti.quantity, "
+            + "ti.discounted_price*ti.quantity AS total_price FROM TransactionItems ti JOIN "
+            + "Transactions t ON ti.transaction_ID = t.transaction_ID WHERE t.member_ID = ? AND t.date "
+            + "BETWEEN ? AND ?";
+        return jdbcTemplate.queryForList(sql, memberId, startDate, endDate);
+    }
+  
     // Read - Get all TransactionItems for a Transaction
     public List<TransactionItem> getTransactionItems(Integer transactionId) {
         String sql = "SELECT * FROM TransactionItems WHERE transaction_id = ?";

@@ -56,6 +56,14 @@ public class ShipmentController {
         return ResponseEntity.ok(shipments);
     }
 
+    @Operation(summary = "Identifies all expired products", description = "Identifies all expired products")
+    @ApiResponse(responseCode = "200", description = "Expired products retrieved")
+    @GetMapping("/expired-products")
+    public ResponseEntity<List<Map<String, Object>>> identifyExpiredProducts() {
+        List<Map<String, Object>> shipments = shipmentService.identifyExpiredProducts();
+        return ResponseEntity.ok(shipments);
+    }
+
     @Operation(summary = "Update an existing shipment", description = "Updates shipment details by shipment ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Shipment updated successfully"),

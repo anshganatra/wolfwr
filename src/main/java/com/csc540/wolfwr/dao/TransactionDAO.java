@@ -65,6 +65,43 @@ public class TransactionDAO {
         return jdbcTemplate.query(sql, transactionRowMapper);
     }
 
+    // Retrieve all transaction from a given member made between two dates
+    public List<Map<String, Object>> getTransactionsByMemberAndDates(Integer memberId, LocalDate startDate,
+                                                             LocalDate endDate) {
+        String sql = "SELECT transaction_ID, total_price, date FROM Transactions WHERE member_ID = ? " + 
+                     "AND date BETWEEN ? AND ?";
+        return jdbcTemplate.queryForList(sql, memberId, startDate, endDate);
+    }
+
+    // Generate a report of sales growth within a given time period. 
+    public List<Map<String, Object>> generateSalesGrowthReport(LocalDate currentPeriodStartDate, 
+                                                               LocalDate currentPeriodEndDate,
+                                                               LocalDate previousPeriodStartDate,
+                                                               LocalDate previousPeriodEndDate,
+                                                               Integer storeId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT store_ID, SUM(CASE WHEN date BETWEEN ? AND ? "
+        + "THEN total_price ELSE 0 END) AS sales_current_period, SUM(CASE WHEN date BETWEEN ? "
+        + "AND ? THEN total_price ELSE 0 END) AS sales_previous_period, "
+        + "ROUND((SUM(CASE WHEN date BETWEEN ? AND ? THEN total_price ELSE 0 END) "
+        + "- SUM(CASE WHEN date BETWEEN ? AND ? THEN total_price ELSE 0 "
+        + "END)) / NULLIF(SUM(CASE WHEN date BETWEEN ? AND ? THEN "
+        + "total_price ELSE 0 END), 0) * 100, 2) AS sales_growth_percentage FROM Transactions ");
+
+        if (storeId != null) {
+            sql.append("WHERE store_ID = ?");
+            return jdbcTemplate.queryForList(sql.toString(), currentPeriodStartDate, currentPeriodEndDate, 
+                   previousPeriodStartDate, previousPeriodEndDate, currentPeriodStartDate, 
+                   currentPeriodEndDate, previousPeriodStartDate, previousPeriodEndDate, 
+                   previousPeriodStartDate, previousPeriodEndDate, storeId);
+        } else {
+            sql.append("GROUP BY store_ID");
+        }
+        return jdbcTemplate.queryForList(sql.toString(), currentPeriodStartDate, currentPeriodEndDate, 
+               previousPeriodStartDate, previousPeriodEndDate, currentPeriodStartDate, currentPeriodEndDate,
+               previousPeriodStartDate, previousPeriodEndDate, previousPeriodStartDate, previousPeriodEndDate);
+    }
+
     // Update an existing transaction
     public int update(Transaction transaction) {
         String sql = "UPDATE Transactions SET store_ID = ?, total_price = ?, date = ?, type = ?, cashier_ID = ?, " +

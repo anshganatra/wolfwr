@@ -39,6 +39,11 @@ public class RewardDAO {
         return jdbcTemplate.queryForObject(sql, rewardRowMapper, memberId, year);
     }
 
+    public List<Reward> getRewardsByYear(Integer year) {
+        String sql = "SELECT * FROM Rewards WHERE year = ?";
+        return jdbcTemplate.query(sql, rewardRowMapper, year);
+    }
+
     public List<Reward> getAll() {
         String sql = "SELECT * FROM Rewards";
         return jdbcTemplate.query(sql, rewardRowMapper);

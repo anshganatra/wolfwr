@@ -55,6 +55,34 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
+    @Operation(summary = "Get transactions by a member between two dates", 
+               description = "Retrieves transactions by a member between two dates")
+    @ApiResponse(responseCode = "200", description = "Transactions retrieved successfully")
+    @GetMapping("/member")
+    public ResponseEntity<List<Map<String, Object>>> getTransactionsByMemberAndDates(@RequestParam Integer memberId,
+                                                                                @RequestParam LocalDate startDate,
+                                                                                @RequestParam LocalDate endDate) {
+        List<Map<String, Object>> transactions = transactionService.getTransactionsByMemberAndDates(memberId, startDate, endDate);
+        return ResponseEntity.ok(transactions);
+    }
+
+    @Operation(summary = "Generates a report of the sales growth", 
+               description = "Retrieves transactions by a member between two dates")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transaction updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
+    @GetMapping("/sales-growth")
+    public ResponseEntity<List<Map<String, Object>>> generateSalesGrowthReport(@RequestParam LocalDate currentPeriodStartDate,
+                                                                               @RequestParam LocalDate currentPeriodEndDate,
+                                                                               @RequestParam LocalDate previousPeriodStartDate,
+                                                                               @RequestParam LocalDate previousPeriodEndDate,
+                                                                               @RequestParam(required = false) Integer storeId) {
+        List<Map<String, Object>> transactions = transactionService.generateSalesGrowthReport(currentPeriodStartDate, currentPeriodEndDate, 
+                                                 previousPeriodStartDate, previousPeriodEndDate, storeId);
+        return ResponseEntity.ok(transactions);
+    }
+
     @Operation(summary = "Update an existing transaction", description = "Updates an existing transaction with new details")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Transaction updated successfully"),

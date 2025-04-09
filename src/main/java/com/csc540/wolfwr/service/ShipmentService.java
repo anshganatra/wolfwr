@@ -51,6 +51,10 @@ public class ShipmentService {
         }).collect(Collectors.toList());
     }
 
+    public List<Map<String, Object>> identifyExpiredProducts() {
+        return shipmentDAO.identifyExpiredProducts();
+    }
+
     // Update an existing shipment with business rule checks
     public ShipmentDTO updateShipment(ShipmentDTO shipmentDTO) {
         if (shipmentDTO.getExpDate() != null && shipmentDTO.getProductionDate().isAfter(shipmentDTO.getExpDate())) {

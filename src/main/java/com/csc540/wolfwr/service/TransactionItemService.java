@@ -7,7 +7,9 @@ import com.csc540.wolfwr.model.TransactionItem;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +41,13 @@ public class TransactionItemService {
         }).collect(Collectors.toList());
     }
 
+    // Retrieve all TransactionItems Purchased by a Customer between two dates
+    public List<Map<String, Object>> getAllTransactionItemsBetweenTwoDates(LocalDate startDate,
+                                                                           LocalDate endDate,
+                                                                           Integer memberId) {
+        return transactionItemDAO.getAllTransactionItemsBetweenTwoDates(startDate, endDate, memberId);
+    }
+  
     // Retrieve all transaction items in a transaction
     public List<TransactionItemDTO> getAllTransactionItemsFromATransaction(Integer transactionId) {
         List<TransactionItem> transactionItems = transactionItemDAO.getTransactionItems(transactionId);

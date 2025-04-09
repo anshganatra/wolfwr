@@ -6,9 +6,11 @@ import com.csc540.wolfwr.model.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Arrays;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,6 +48,22 @@ public class TransactionService {
             BeanUtils.copyProperties(transaction, dto);
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    // Retrieve all transaction from a given member made between two dates
+    public List<Map<String, Object>> getTransactionsByMemberAndDates(Integer memberId, LocalDate startDate,
+                                                                LocalDate endDate) {
+        return transactionDAO.getTransactionsByMemberAndDates(memberId, startDate, endDate);
+    }
+
+    // Generate a report of sales growth within a given time period. 
+    public List<Map<String, Object>> generateSalesGrowthReport(LocalDate currentPeriodStartDate, 
+                                                               LocalDate currentPeriodEndDate,
+                                                               LocalDate previousPeriodStartDate,
+                                                               LocalDate previousPeriodEndDate,
+                                                               Integer storeId) {
+        return transactionDAO.generateSalesGrowthReport(currentPeriodStartDate, currentPeriodEndDate, 
+               previousPeriodStartDate, previousPeriodEndDate, storeId);
     }
 
     // Update an existing transaction
