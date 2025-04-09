@@ -48,6 +48,12 @@ public class TransactionItemDAO {
         return jdbcTemplate.query(sql, transactionItemRowMapper);
     }
 
+    // Read - Get all TransactionItems for a Transaction
+    public List<TransactionItem> getTransactionItems(Integer transactionId) {
+        String sql = "SELECT * FROM TransactionItems WHERE transaction_id = ?";
+        return jdbcTemplate.query(sql, transactionItemRowMapper, transactionId);
+    }
+
     // Update - Update an existing TransactionItem record.
     public int update(TransactionItem transactionItem, Integer transactionId, Integer productBatchId) {
         String sql = "UPDATE TransactionItems SET transaction_ID = ?, product_batch_ID = ?, price = ?, discounted_price = ?, quantity = ? WHERE transaction_ID = ? AND product_batch_ID = ?";

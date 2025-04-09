@@ -120,5 +120,10 @@ public class InventoryDAO {
 
     }
 
+    public int updateReturn(Integer quantity, Integer storeId ,Integer shipmentId) {
+        String sql = "UPDATE Inventory SET product_qty = product_qty + ? WHERE store_ID = ? AND shipment_ID = ?";
+        return jdbcTemplate.update(sql, quantity, storeId, shipmentId);
+    }
+
 
 }
