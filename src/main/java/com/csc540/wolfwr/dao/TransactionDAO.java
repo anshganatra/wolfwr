@@ -3,11 +3,11 @@ package com.csc540.wolfwr.dao;
 import com.csc540.wolfwr.model.Transaction;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,15 +42,31 @@ public class TransactionDAO {
     // Save a new transaction
     public int save(Transaction transaction) {
         String sql = "INSERT INTO Transactions (store_ID, total_price, date, type, cashier_ID, member_ID, completedStatus) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql,
-                transaction.getStoreId(),
-                transaction.getTotalPrice(),
-                transaction.getDate(),
-                transaction.getType(),
-                transaction.getCashierId(),
-                transaction.getMemberId(),
-                transaction.getCompletedStatus());
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, transaction.getStoreId());
+            ps.setBigDecimal(2, transaction.getTotalPrice());
+            ps.setTimestamp(3, Timestamp.valueOf(transaction.getDate())); // assuming LocalDateTime
+            ps.setString(4, transaction.getType());
+            ps.setObject(5, transaction.getCashierId(), java.sql.Types.INTEGER); // in case nullable
+            ps.setObject(6, transaction.getMemberId(), java.sql.Types.INTEGER);  // in case nullable
+            ps.setBoolean(7, transaction.getCompletedStatus());
+            return ps;
+        }, keyHolder);
+
+        // Set the generated ID back to the transaction object
+        Number generatedId = keyHolder.getKey();
+        if (generatedId != null) {
+            transaction.setTransactionId(generatedId.intValue());
+        } else {
+            throw new RuntimeException("Failed to retrieve generated transaction ID.");
+        }
+
+        return generatedId.intValue();
     }
 
     // Retrieve a transaction by its ID
