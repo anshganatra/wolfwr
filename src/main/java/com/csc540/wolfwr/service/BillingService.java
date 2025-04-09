@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,13 +21,15 @@ public class BillingService {
     private final DiscountService discountService;
     private final ShipmentService shipmentService;
     private final InventoryService inventoryService;
+    private final ProductService productService;
 
-    public BillingService(TransactionDAO transactionDAO, TransactionItemDAO transactionItemDAO, DiscountService discountService, ShipmentService shipmentService, InventoryService inventoryService) {
+    public BillingService(TransactionDAO transactionDAO, TransactionItemDAO transactionItemDAO, DiscountService discountService, ShipmentService shipmentService, InventoryService inventoryService, ProductService productService) {
         this.transactionDAO = transactionDAO;
         this.transactionItemDAO = transactionItemDAO;
         this.discountService = discountService;
         this.shipmentService = shipmentService;
         this.inventoryService = inventoryService;
+        this.productService = productService;
     }
 
     private Boolean validateLineItem(BillItemDTO billItem) {
@@ -66,7 +69,29 @@ public class BillingService {
         return marketPrice.subtract(maxDiscountValue);
     }
 
-    public Integer createBill(BillRequestDTO billRequest) {
+    public BillResponseDTO buildResponse(Transaction transaction, List<BillItemResponseDTO> billItemResponseDTOS) {
+        BillResponseDTO response = new BillResponseDTO();
+        response.setTransactionId(transaction.getTransactionId());
+        response.setStoreId(transaction.getStoreId());
+        response.setCashierId(transaction.getCashierId());
+        response.setMemberId(transaction.getMemberId());
+        response.setDate(transaction.getDate());
+        response.setTotalPrice(transaction.getTotalPrice());
+        response.setItems(billItemResponseDTOS);
+        return response;
+    }
+
+    public BillItemResponseDTO buildItemResponse(TransactionItem transactionItem, Integer productId) {
+        BillItemResponseDTO billItemResponseDTO = new BillItemResponseDTO();
+        billItemResponseDTO.setProductBatchId(transactionItem.getProductBatchId());
+        billItemResponseDTO.setQuantity(transactionItem.getQuantity());
+        billItemResponseDTO.setFinalPrice(transactionItem.getDiscountedPrice());
+        billItemResponseDTO.setUnitPrice(transactionItem.getPrice());
+        billItemResponseDTO.setProductName(productService.getProductById(productId).getProductName());
+        return billItemResponseDTO;
+    }
+
+    public BillResponseDTO createBill(BillRequestDTO billRequest) {
         // Step 1: Create Transaction
         Transaction transaction = new Transaction();
         transaction.setStoreId(billRequest.getStoreId());
@@ -75,10 +100,14 @@ public class BillingService {
         transaction.setDate(billRequest.getDate() != null ? billRequest.getDate() : LocalDateTime.now());
         transaction.setType("PURCHASE");
         transaction.setCompletedStatus(false);
+        transaction.setTotalPrice(new BigDecimal(0));
+        transaction.setDiscountedTotalPrice(new BigDecimal(0));
         Integer transactionId = transactionDAO.save(transaction); // assumes auto-incremented ID is populated
         transaction.setTransactionId(transactionId);
 
+        BigDecimal totalDiscountedPrice = new BigDecimal(0);
         BigDecimal totalPrice = new BigDecimal(0);
+        List<BillItemResponseDTO> billItems = new ArrayList<>();
         // Step 2: Create TransactionItems
         for (BillItemDTO item : billRequest.getItems()) {
             // validate if item exists in inventory
@@ -91,20 +120,28 @@ public class BillingService {
             transactionItem.setQuantity(item.getQuantity());
             // get price from discount / shipment and set it
             InventoryDTO currentInventory = inventoryService.getInventoryByShipmentId(item.getProductBatchId());
+            transactionItem.setPrice(currentInventory.getMarketPrice());
             List<DiscountDTO> relevantDiscounts = discountService.getByProductIdOrShipmentId(currentInventory.getProductId(), item.getProductBatchId());
             if (relevantDiscounts.isEmpty()) {
-                transactionItem.setPrice(currentInventory.getMarketPrice());
+                transactionItem.setDiscountedPrice(currentInventory.getMarketPrice());
             }  else{
-                transactionItem.setPrice(findMaxDiscountPrice(relevantDiscounts, currentInventory));
+                transactionItem.setDiscountedPrice(findMaxDiscountPrice(relevantDiscounts, currentInventory));
             }
+            totalDiscountedPrice = totalDiscountedPrice.add(transactionItem.getDiscountedPrice());
+            totalPrice = totalPrice.add(transactionItem.getPrice());
             // update iventory with new quantity
             Integer newProductQty = currentInventory.getProductQty() - item.getQuantity();
             currentInventory.setProductQty(newProductQty);
             inventoryService.updateInventory(currentInventory);
             // save transaction item
             transactionItemDAO.save(transactionItem);
+            // build response object for item
+            billItems.add(buildItemResponse(transactionItem, currentInventory.getProductId()));
         }
+        transaction.setDiscountedTotalPrice(totalDiscountedPrice);
+        transaction.setTotalPrice(totalPrice);
         transaction.setCompletedStatus(true);
-        return transaction.getTransactionId();
+        transactionDAO.update(transaction);
+        return buildResponse(transaction, billItems);
     }
 }

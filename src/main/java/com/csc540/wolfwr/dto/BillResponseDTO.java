@@ -8,9 +8,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class BillRequestDTO {
+public class BillResponseDTO {
 
-    @Schema(description = "Store ID where the transaction occurred", example = "1")
+    @Schema(description = "Transaction ID", example = "12345")
+    private Integer transactionId;
+
+    @Schema(description = "Store ID where the transaction occurred", example = "8")
     private Integer storeId;
 
     @Schema(description = "Cashier handling the transaction", example = "101")
@@ -22,6 +25,9 @@ public class BillRequestDTO {
     @Schema(description = "Date of the transaction", example = "2025-04-09T10:15:00")
     private LocalDateTime date;
 
-    @Schema(description = "List of items being purchased")
-    private List<BillItemDTO> items;
+    @Schema(description = "Total price of the transaction", example = "89.99")
+    private BigDecimal totalPrice;
+
+    @Schema(description = "List of items in the transaction")
+    private List<BillItemResponseDTO> items;
 }

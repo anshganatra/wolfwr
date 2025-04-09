@@ -35,14 +35,15 @@ public class TransactionDAO {
             transaction.setCashierId(rs.getInt("cashier_ID"));
             transaction.setMemberId(rs.getInt("member_ID"));
             transaction.setCompletedStatus(rs.getBoolean("completedStatus"));
+            transaction.setDiscountedTotalPrice(rs.getBigDecimal("discounted_total_price"));
             return transaction;
         }
     };
 
     // Save a new transaction
     public int save(Transaction transaction) {
-        String sql = "INSERT INTO Transactions (store_ID, total_price, date, type, cashier_ID, member_ID, completedStatus) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Transactions (store_ID, total_price, date, type, cashier_ID, member_ID, completedStatus, discounted_total_price) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -55,6 +56,7 @@ public class TransactionDAO {
             ps.setObject(5, transaction.getCashierId(), java.sql.Types.INTEGER); // in case nullable
             ps.setObject(6, transaction.getMemberId(), java.sql.Types.INTEGER);  // in case nullable
             ps.setBoolean(7, transaction.getCompletedStatus());
+            ps.setBigDecimal(8, transaction.getDiscountedTotalPrice());
             return ps;
         }, keyHolder);
 
@@ -121,7 +123,7 @@ public class TransactionDAO {
     // Update an existing transaction
     public int update(Transaction transaction) {
         String sql = "UPDATE Transactions SET store_ID = ?, total_price = ?, date = ?, type = ?, cashier_ID = ?, " +
-                     "member_ID = ?, completedStatus = ? WHERE transaction_ID = ?";
+                     "member_ID = ?, completedStatus = ?, discounted_total_price = ? WHERE transaction_ID = ?";
         return jdbcTemplate.update(sql,
                 transaction.getStoreId(),
                 transaction.getTotalPrice(),
@@ -130,6 +132,7 @@ public class TransactionDAO {
                 transaction.getCashierId(),
                 transaction.getMemberId(),
                 transaction.getCompletedStatus(),
+                transaction.getDiscountedTotalPrice(),
                 transaction.getTransactionId());
     }
 

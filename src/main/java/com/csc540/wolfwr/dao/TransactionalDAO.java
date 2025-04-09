@@ -31,7 +31,6 @@ public class TransactionalDAO {
             TransactionItem item;
             try (PreparedStatement ps = conn.prepareStatement(itemQuery)) {
                 ps.setInt(1, returnItemDTO.getOgTid());
-                // TODO check if product batch ID = product ID or shipment ID
                 ps.setInt(2, returnItemDTO.getShipmentId());
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) throw new RuntimeException("Product not found in original transaction");
