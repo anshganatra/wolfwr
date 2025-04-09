@@ -124,4 +124,60 @@ public class ReportController {
         List<Map<String, Object>> report = transactionService.getProfitReport(reportType, startDate, endDate, storeId);
         return ResponseEntity.ok(report);
     }
+    
+    @Operation(
+            summary = "Generate a total revenue report",
+            description = "Returns total revenue (total sales) for the given date range, grouped by day/month/quarter/year. Also accepts storeId filter."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Total revenue report generated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input parameters")
+    })
+    @GetMapping("/total-revenue")
+    public ResponseEntity<List<Map<String, Object>>> getTotalRevenueReport(
+            @RequestParam("reportType") String reportType,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "storeId", required = false) Integer storeId) {
+
+        // Calling the service method to generate the total revenue report
+        List<Map<String, Object>> report = transactionService.getRevenueReport(reportType, startDate, endDate, storeId);
+        return ResponseEntity.ok(report);
+    }
+    
+    @Operation(
+            summary = "Generate a customer activity report",
+            description = "Returns the total purchase amount for a given customer (member) during a specified date range."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Customer activity report generated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input parameters")
+    })
+    @GetMapping("/customer-activity")
+    public ResponseEntity<List<Map<String, Object>>> getCustomerActivityReport(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "memberId", required = false) Integer memberId) {
+
+        // Calling the service method to generate the customer activity report
+        List<Map<String, Object>> report = transactionService.getCustomerActivityReport(startDate, endDate, memberId);
+        return ResponseEntity.ok(report);
+    }
+    
+    @Operation(
+            summary = "Get Membership Level and Rewards",
+            description = "Returns the membership level and total rewards for each member, optionally filtered by year."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Membership level and rewards retrieved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input parameters")
+    })
+    @GetMapping("/membership-rewards")
+    public ResponseEntity<List<Map<String, Object>>> getMembershipAndRewards(
+            @RequestParam(value = "year", required = false) Integer year) {
+
+        // Calling the service method to get the membership level and reward total
+        List<Map<String, Object>> report = transactionService.getMembershipAndRewards(year);
+        return ResponseEntity.ok(report);
+    }
 }

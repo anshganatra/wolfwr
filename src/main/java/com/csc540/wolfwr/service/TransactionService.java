@@ -120,4 +120,42 @@ public class TransactionService {
         // Call the DAO method to get the profit report
         return transactionDAO.getTotalProfitReport(sqlStartDate, sqlEndDate, storeId);
     }
+    
+ // Method to generate the total revenue report
+    public List<Map<String, Object>> getRevenueReport(String reportType, LocalDate startDate, LocalDate endDate, Integer storeId) {
+        // Validate the startDate and endDate
+        if (startDate == null) {
+            throw new IllegalArgumentException("Start date must be provided");
+        }
+
+        // If endDate is null, set it to the current date
+        if (endDate == null) {
+            endDate = LocalDate.now();  // Default to the current date if endDate is not provided
+        }
+
+        // Convert LocalDate to java.sql.Date for the query
+        Date sqlStartDate = Date.valueOf(startDate);
+        Date sqlEndDate = Date.valueOf(endDate);
+
+        // Call the DAO method to get the total revenue report
+        return transactionDAO.getTotalRevenueReport(sqlStartDate, sqlEndDate, storeId);
+    }
+    
+ // Method to generate the customer activity report (total purchase amount)
+    public List<Map<String, Object>> getCustomerActivityReport(LocalDate startDate, LocalDate endDate, Integer memberId) {
+        // Convert LocalDate to java.sql.Date for the query
+        Date sqlStartDate = Date.valueOf(startDate);
+        Date sqlEndDate = Date.valueOf(endDate);
+
+        // Call the DAO method to get the customer activity report
+        return transactionDAO.getCustomerActivityReport(sqlStartDate, sqlEndDate, memberId);
+    }
+    
+ // Method to get membership level and reward total for each member with optional year filter
+    public List<Map<String, Object>> getMembershipAndRewards(Integer year) {
+        // Calling the DAO method to get the membership level and reward total
+        return transactionDAO.getMembershipAndRewards(year);
+    }
+    
+    
 }
