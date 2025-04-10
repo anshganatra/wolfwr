@@ -28,7 +28,6 @@ public class StoreService {
     private final InventoryDAO inventoryDAO;
     private final JdbcTemplate jdbcTemplate;
     private final TransactionalDAO transactionalDAO;
-
     
 
     public StoreService(StoreDAO storeDAO, ShipmentDAO shipmentDAO, InventoryDAO inventoryDAO, JdbcTemplate jdbcTemplate, TransactionalDAO transactionalDAO) {
@@ -44,6 +43,7 @@ public class StoreService {
     public StoreDTO createStore(StoreDTO storeDTO) {
         Store store = new Store();
         BeanUtils.copyProperties(storeDTO, store);
+        store.setIsActive(true);
         storeDAO.save(store);
         return storeDTO;
     }
@@ -146,5 +146,17 @@ public class StoreService {
     public boolean isShipmentBelongsToStore(Integer shipmentId, Integer storeId) {
         return shipmentDAO.isShipmentBelongsToStore(shipmentId, storeId);  // Assuming shipmentDAO has this method
     }
+
+    public StoreDTO updateStoreStatus(Integer storeId, Boolean newStatus){
+        Store store = getStoreById(storeId);
+        store.setIsActive(newStatus);
+        storeDAO.update(store);
+        Store updatedStore = getStoreById(storeId);
+        StoreDTO response = new StoreDTO();
+        BeanUtils.copyProperties(updatedStore, response);
+        return response;
+    }
+
+
 
 }

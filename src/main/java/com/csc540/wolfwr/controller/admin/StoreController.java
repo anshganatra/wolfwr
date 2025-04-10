@@ -86,4 +86,14 @@ public class StoreController {
         List<Map<String, Object>> turnoverData = storeService.calculateInventoryTurnover();
         return ResponseEntity.ok(turnoverData);
     }
+
+    @PostMapping("/update-active-status")
+    @Operation(summary = "Update activity status of store", description = "Updates an existing store with new active status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Store updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
+    public ResponseEntity<StoreDTO> updateStoreStatus(@RequestParam(name = "storeId") Integer storeId, @RequestParam(name = "newStatus") Boolean newStatus) {
+        return ResponseEntity.ok(storeService.updateStoreStatus(storeId, newStatus));
+    }
 }
