@@ -36,7 +36,7 @@ public class WarehouseStaffViewController {
             @ApiResponse(responseCode = "200", description = "Inventory processed successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
-    public ResponseEntity<InventoryDTO> processNewInventory(@RequestParam(name = "shipmentId") Integer shipmentId, @RequestParam BigDecimal marketPrice) {
+    public ResponseEntity<InventoryDTO> processNewInventory(@RequestParam(name = "shipmentId") Integer shipmentId, @RequestParam(name = "marketPrice") BigDecimal marketPrice) {
         InventoryDTO response = inventoryService.processNewInventory(shipmentId, marketPrice);
         if (Objects.isNull(response)) {
             return ResponseEntity.badRequest().build();
