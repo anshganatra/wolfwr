@@ -23,6 +23,9 @@ public class ShipmentService {
 
     // Create a new shipment with business rule checks
     public ShipmentDTO createShipment(ShipmentDTO shipmentDTO) {
+        if (Objects.isNull(shipmentDTO.getShipmentDate())) {
+            shipmentDTO.setShipmentDate(LocalDate.now());
+        }
         // Business rule: production_date <= exp_date (if exp_date provided)
         if (shipmentDTO.getExpDate() != null && shipmentDTO.getProductionDate().isAfter(shipmentDTO.getExpDate())) {
             throw new IllegalArgumentException("Production date cannot be after expiration date.");

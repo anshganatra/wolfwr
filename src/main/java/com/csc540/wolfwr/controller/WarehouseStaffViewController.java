@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Tag(name = "Warehouse Staff View", description = "All operations performed by warehouse staff")
@@ -35,8 +36,8 @@ public class WarehouseStaffViewController {
             @ApiResponse(responseCode = "200", description = "Inventory processed successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request")
     })
-    public ResponseEntity<InventoryDTO> processNewInventory(@RequestBody Integer shipmentId) {
-        InventoryDTO response = inventoryService.processNewInventory(shipmentId);
+    public ResponseEntity<InventoryDTO> processNewInventory(@RequestParam(name = "shipmentId") Integer shipmentId, @RequestParam(name = "marketPrice") BigDecimal marketPrice) {
+        InventoryDTO response = inventoryService.processNewInventory(shipmentId, marketPrice);
         if (Objects.isNull(response)) {
             return ResponseEntity.badRequest().build();
         }
