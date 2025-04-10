@@ -85,4 +85,16 @@ public class TransactionItemDAO {
         String sql = "DELETE FROM TransactionItems WHERE transaction_ID = ? AND product_batch_ID = ?";
         return jdbcTemplate.update(sql, transactionId, productBatchId);
     }
+
+    /**
+     * Retrieves all transaction items for the given transaction ID.
+     * Each transaction item is returned as a Map where keys correspond to the column names.
+     *
+     * @param transactionId the transaction ID to filter on
+     * @return a list of maps, each representing a transaction item row
+     */
+    public List<Map<String, Object>> getTransactionItemsByTransactionId(Integer transactionId) {
+        String sql = "SELECT * FROM TransactionItems WHERE transaction_ID = ?";
+        return jdbcTemplate.queryForList(sql, transactionId);
+    }
 }

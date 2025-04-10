@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import java.util.List;
@@ -156,6 +157,18 @@ public class TransactionService {
     public List<Map<String, Object>> getMembershipAndRewards(Integer year) {
         // Calling the DAO method to get the membership level and reward total
         return transactionDAO.getMembershipAndRewards(year);
+    }
+
+    /**
+     * Delegates to TransactionDAO to fetch all transactions for the specified member and date range.
+     *
+     * @param memberId the member id to filter on
+     * @param startDate the beginning of the period as LocalDateTime
+     * @param endDate the end of the period as LocalDateTime
+     * @return a List of Maps, each representing a transaction row
+     */
+    public List<Map<String, Object>> getTransactionsByMemberAndDate(Integer memberId, LocalDate startDate, LocalDate endDate) {
+        return transactionDAO.getTransactionsByMemberAndDate(memberId, startDate, endDate);
     }
     
     

@@ -87,6 +87,15 @@ public class ShipmentService {
     // Get expired shipments
     public List<Map<String, Object>> getExpiredShipments(Integer storeId) {
         return shipmentDAO.getExpiredShipments(storeId);
+    }
 
+    /**
+     * Returns the shipment record as a map for the given shipment id.
+     *
+     * @param shipmentId the shipment id to look for.
+     * @return a Map representing the shipment, or null if not found.
+     */
+    public Map<String, Object> getShipmentAsMapById(Integer shipmentId) {
+        return shipmentDAO.getShipmentAsMapById(shipmentId);
     }
 }

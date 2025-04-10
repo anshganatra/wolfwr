@@ -208,4 +208,21 @@ public class ShipmentDAO {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, shipmentId, storeId);
         return count != null && count > 0; // If count > 0, shipment belongs to the store
     }
+
+    /**
+     * Retrieves a shipment record as a map for the given shipmentId.
+     * The map's keys will be the column names.
+     *
+     * @param shipmentId the shipment id (which is the same as product_batch_id)
+     * @return a Map of column names to values, or null if no record is found.
+     */
+    public Map<String, Object> getShipmentAsMapById(Integer shipmentId) {
+        String sql = "SELECT * FROM Shipments WHERE shipment_ID = ?";
+        try {
+            return jdbcTemplate.queryForMap(sql, shipmentId);
+        } catch (org.springframework.dao.EmptyResultDataAccessException ex) {
+            // No shipment found with the given id - return null (or an empty map, as desired)
+            return null;
+        }
+    }
 }

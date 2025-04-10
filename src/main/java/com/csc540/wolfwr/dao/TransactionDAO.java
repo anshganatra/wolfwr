@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -336,6 +337,25 @@ public class TransactionDAO {
         } else {
             return jdbcTemplate.queryForList(sqlQuery.toString());
         }
+    }
+
+    /**
+     * Retrieves all transactions for a given member between the provided start and end dates.
+     * The startDate and endDate are LocalDateTime objects, which are converted to SQL timestamps.
+     *
+     * @param memberId the member's id
+     * @param startDate the beginning of the period
+     * @param endDate the end of the period
+     * @return a list of maps where each map is a row from the Transactions table
+     */
+    public List<Map<String, Object>> getTransactionsByMemberAndDate(Integer memberId, LocalDate startDate, LocalDate endDate) {
+        String sql = "SELECT * FROM Transactions WHERE member_ID = ? AND date BETWEEN ? AND ?";
+        return jdbcTemplate.queryForList(
+                sql,
+                memberId,
+                Date.valueOf(startDate),
+                Date.valueOf(endDate)
+        );
     }
 
 }

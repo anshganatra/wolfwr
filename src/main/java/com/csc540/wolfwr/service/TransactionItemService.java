@@ -71,4 +71,14 @@ public class TransactionItemService {
     public void deleteTransactionItem(Integer transactionId, Integer productBatchId) {
         transactionItemDAO.delete(transactionId, productBatchId);
     }
+
+    /**
+     * Retrieves transaction items for the given transaction ID.
+     *
+     * @param transactionId the transaction ID
+     * @return a list of maps, each representing a transaction item row
+     */
+    public List<Map<String, Object>> getTransactionItemsByTransactionId(Integer transactionId) {
+        return transactionItemDAO.getTransactionItemsByTransactionId(transactionId);
+    }
 }
