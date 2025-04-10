@@ -1,12 +1,15 @@
 package com.csc540.wolfwr.service;
 
 import com.csc540.wolfwr.dao.StaffDAO;
-import com.csc540.wolfwr.dto.StaffDTO;
+import com.csc540.wolfwr.dto.*;
 import com.csc540.wolfwr.model.Staff;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -14,10 +17,21 @@ public class StaffService {
 
     private final StaffDAO staffDAO;
     private final StoreService storeService; // Used to validate store existence
+    private final RegistrationStaffService registrationStaffService;
+    private final BillingStaffService billingStaffService;
+    private final WarehouseStaffService warehouseStaffService;
+    private final CashierService cashierService;
+    private final ManagerService managerService;
 
-    public StaffService(StaffDAO staffDAO, StoreService storeService) {
+
+    public StaffService(StaffDAO staffDAO, StoreService storeService, RegistrationStaffService registrationStaffService, BillingStaffService billingStaffService, WarehouseStaffService warehouseStaffService, CashierService cashierService, ManagerService managerService) {
         this.staffDAO = staffDAO;
         this.storeService = storeService;
+        this.registrationStaffService = registrationStaffService;
+        this.billingStaffService = billingStaffService;
+        this.warehouseStaffService = warehouseStaffService;
+        this.cashierService = cashierService;
+        this.managerService = managerService;
     }
 
     // Create a new staff member with store existence check
@@ -28,11 +42,51 @@ public class StaffService {
                 throw new IllegalArgumentException("Store with ID " + staffDTO.getStoreId() + " does not exist.");
             }
         }
+        if (Objects.isNull(staffDTO.getDoj())) {
+            staffDTO.setDoj(LocalDate.now());
+        }
         Staff staff = new Staff();
         BeanUtils.copyProperties(staffDTO, staff);
+        staff.setAge(Period.between(staff.getDob(), LocalDate.now()).getYears());
         staffDAO.save(staff);
+        updateSpecializedTables(staff.getTitle(), staff.getStaffId());
         return staffDTO;
     }
+
+    private void updateSpecializedTables(String staffTitle, Integer staffId) {
+        switch (staffTitle) {
+            case "Registration Staff":
+                RegistrationStaffDTO registrationStaffDTO = new RegistrationStaffDTO();
+                registrationStaffDTO.setRegistrationStaffId(staffId);
+                registrationStaffService.create(registrationStaffDTO);
+                break;
+
+            case "Billing Staff":
+                BillingStaffDTO billingStaffDTO = new BillingStaffDTO();
+                billingStaffDTO.setBillingStaffId(staffId);
+                billingStaffService.create(billingStaffDTO);
+                break;
+
+            case "Warehouse Staff":
+                WarehouseStaffDTO warehouseStaffDTO = new WarehouseStaffDTO();
+                warehouseStaffDTO.setWarehouseStaffId(staffId);
+                warehouseStaffService.createWarehouseStaff(warehouseStaffDTO);
+                break;
+
+            case "Cashier":
+                CashierDTO cashierDTO = new CashierDTO();
+                cashierDTO.setCashierId(staffId);
+                cashierService.createCashier(cashierDTO);
+                break;
+
+            case "Store Manager":
+                ManagerDTO storeManagerDTO = new ManagerDTO();
+                storeManagerDTO.setManagerId(staffId);
+                managerService.createManager(storeManagerDTO);
+                break;
+        }
+    }
+
 
     // Retrieve a staff member by ID
     public StaffDTO getStaffById(Integer staffId) {

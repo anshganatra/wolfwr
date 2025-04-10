@@ -46,5 +46,11 @@ public class ManagerDAO {
         return jdbcTemplate.update(sql, managerId);
     }
 
+    // Read: Retrieve manager by ID
+    public Manager getManagerById(Integer managerId) {
+        String sql = "SELECT * FROM Managers WHERE manager_id = ?";
+        return jdbcTemplate.queryForObject(sql, managerRowMapper, managerId);
+    }
+
     // Update: Not implemented because there is no additional field to update.
 }

@@ -3,10 +3,14 @@ package com.csc540.wolfwr.dao;
 import com.csc540.wolfwr.model.Store;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -33,14 +37,27 @@ public class StoreDAO {
         }
     };
 
-    // Create a new store record
-    public int save(Store store) {
+    // Create a new store record and return the persisted Store
+    public Store save(Store store) {
         String sql = "INSERT INTO Stores (phone, address, is_active, manager_ID) VALUES (?, ?, ?, ?)";
-        return jdbcTemplate.update(sql,
-                store.getPhone(),
-                store.getAddress(),
-                store.getIsActive(),
-                store.getManagerId());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, store.getPhone());
+            ps.setString(2, store.getAddress());
+            ps.setBoolean(3, store.getIsActive());
+            ps.setInt(4, store.getManagerId());
+            return ps;
+        }, keyHolder);
+
+        // Set generated ID to store object
+        Number key = keyHolder.getKey();
+        if (key != null) {
+            store.setStoreId(key.intValue());  // Assuming storeId is an Integer
+        }
+
+        return store;
     }
 
     // Retrieve a store by store_ID

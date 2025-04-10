@@ -21,9 +21,10 @@ public class ProductService {
     public ProductDTO createProduct(ProductDTO productDTO){
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
-        productDAO.save(product);
-        // TODO return the actual created product with product ID instead of the same object
-        return productDTO;
+        Product createdProduct = productDAO.save(product);
+        ProductDTO response = new ProductDTO();
+        BeanUtils.copyProperties(createdProduct, response);
+        return response;
     }
 
     public ProductDTO getProductById(Integer productId){
