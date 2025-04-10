@@ -2,8 +2,10 @@ package com.csc540.wolfwr.service;
 
 import com.csc540.wolfwr.dao.StaffDAO;
 import com.csc540.wolfwr.dto.*;
+import com.csc540.wolfwr.model.Manager;
 import com.csc540.wolfwr.model.Staff;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -136,5 +138,30 @@ public class StaffService {
         } else {
             throw new IllegalArgumentException("Manager not found or manager does not have a store assigned.");
         }
+    }
+
+    // Link a manager to their store and vice versa
+    public SetStoreManagerDTO linkManagerAndStore(Integer managerId, Integer storeId) {
+        StoreDTO storeDTO;
+        List<Integer> managerIds = managerService.getAllManagers().stream().map(ManagerDTO::getManagerId).toList();
+        if (!managerIds.contains(managerId)) {
+            throw new IllegalArgumentException("Invalid managerId");
+        }
+        try{
+            storeDTO = storeService.getStoreDTOById(storeId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new IllegalArgumentException("Invalid store ID");
+        }
+        // link the manager to the store
+        StaffDTO managerStaff = getStaffById(managerId);
+        managerStaff.setStoreId(storeId);
+        updateStaff(managerStaff);
+        // link the store to the manager
+        storeDTO.setManagerId(managerId);
+        storeService.updateStore(storeDTO);
+        SetStoreManagerDTO setStoreManagerDTO = new SetStoreManagerDTO();
+        setStoreManagerDTO.setManagerId(managerId);
+        setStoreManagerDTO.setStoreId(storeId);
+        return setStoreManagerDTO;
     }
 }

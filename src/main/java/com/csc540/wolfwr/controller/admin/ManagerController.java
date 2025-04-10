@@ -22,9 +22,11 @@ import java.util.List;
 public class ManagerController {
 
     private final ManagerService managerService;
+    private final StaffService staffService;
 
-    public ManagerController(ManagerService managerService) {
+    public ManagerController(ManagerService managerService, StaffService staffService) {
         this.managerService = managerService;
+        this.staffService = staffService;
     }
 
     @Operation(summary = "Create a new manager", description = "Creates a new manager record linking a staff member")
@@ -61,7 +63,7 @@ public class ManagerController {
     })
     @PostMapping("/set-store-manager")
     public ResponseEntity<SetStoreManagerDTO> setStoreManager(@RequestParam(name = "managerId") Integer managerId, @RequestParam(name = "storeId") Integer storeId) {
-        return ResponseEntity.ok(managerService.linkManagerAndStore(managerId, storeId));
+        return ResponseEntity.ok(staffService.linkManagerAndStore(managerId, storeId));
     }
 
     // Exception handler for IllegalArgumentException

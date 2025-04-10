@@ -19,13 +19,9 @@ import java.util.stream.Collectors;
 public class ManagerService {
 
     private final ManagerDAO managerDAO;
-    private final StaffService staffService;
-    private final StoreService storeService;
 
-    public ManagerService(ManagerDAO managerDAO, StaffService staffService, StoreService storeService) {
+    public ManagerService(ManagerDAO managerDAO) {
         this.managerDAO = managerDAO;
-        this.staffService = staffService;
-        this.storeService = storeService;
     }
 
     // Create a new manager record
@@ -49,31 +45,5 @@ public class ManagerService {
     // Delete a manager by their ID
     public void deleteManager(Integer managerId) {
         managerDAO.delete(managerId);
-    }
-
-    // Link a manager to their store and vice versa
-    public SetStoreManagerDTO linkManagerAndStore(Integer managerId, Integer storeId) {
-        StoreDTO storeDTO;
-        try{
-            Manager manager = managerDAO.getManagerById(managerId);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new IllegalArgumentException("Invalid manager ID");
-        }
-        try{
-            storeDTO = storeService.getStoreDTOById(storeId);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new IllegalArgumentException("Invalid store ID");
-        }
-        // link the manager to the store
-        StaffDTO managerStaff = staffService.getStaffById(managerId);
-        managerStaff.setStoreId(storeId);
-        staffService.updateStaff(managerStaff);
-        // link the store to the manager
-        storeDTO.setManagerId(managerId);
-        storeService.updateStore(storeDTO);
-        SetStoreManagerDTO setStoreManagerDTO = new SetStoreManagerDTO();
-        setStoreManagerDTO.setManagerId(managerId);
-        setStoreManagerDTO.setStoreId(storeId);
-        return setStoreManagerDTO;
     }
 }
