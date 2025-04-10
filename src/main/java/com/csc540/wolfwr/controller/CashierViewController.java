@@ -38,18 +38,15 @@ public class CashierViewController {
         // check if the cashierID is valid
         List<Integer> validCashierIds = cashierService.getAllCashiers().stream().map(CashierDTO::getCashierId).toList();
         if (!validCashierIds.contains(billRequest.getCashierId())) {
-            System.out.println("cashier");
-            return Boolean.FALSE;
+            throw new IllegalArgumentException("Cashier ID is invalid");
         }
         List<Integer> validStoreIds = storeService.getAllStores().stream().filter(storeDTO -> Objects.equals(storeDTO.getIsActive(), true)).map(StoreDTO::getStoreId).toList();
         if (!validStoreIds.contains(billRequest.getStoreId())) {
-            System.out.println("store");
-            return Boolean.FALSE;
+            throw new IllegalArgumentException("Store ID is invalid");
         }
         List<Integer> validMembers = memberService.getMembers().stream().filter(memberDTO -> Objects.equals(memberDTO.isActiveStatus(), true)).map(MemberDTO::getMemberId).toList();
         if (!validMembers.contains(billRequest.getMemberId())) {
-            System.out.println(validMembers);
-            return Boolean.FALSE;
+            throw new IllegalArgumentException(("Member ID is invalid"));
         }
         return Boolean.TRUE;
     }
