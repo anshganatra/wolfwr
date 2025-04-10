@@ -6,7 +6,9 @@ import com.csc540.wolfwr.model.Staff;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +29,9 @@ public class StaffService {
             if (storeService.getStoreById(staffDTO.getStoreId()) == null) {
                 throw new IllegalArgumentException("Store with ID " + staffDTO.getStoreId() + " does not exist.");
             }
+        }
+        if (Objects.isNull(staffDTO.getDoj())) {
+            staffDTO.setDoj(LocalDate.now());
         }
         Staff staff = new Staff();
         BeanUtils.copyProperties(staffDTO, staff);
