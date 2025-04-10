@@ -78,6 +78,8 @@ public class RegistrationStaffViewController {
         membershipLevelChangeDTO.setLevelChangeDate(LocalDate.now());
         membershipLevelChangeDTO.setRegistrationStaffID(registrationStaffId);
 
+        membershipLevelChangeService.createMembershipLevelChange(membershipLevelChangeDTO);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(savedMemberDTO);
     }
 
@@ -146,11 +148,22 @@ public class RegistrationStaffViewController {
             @ApiResponse(responseCode = "200", description = "Successfully updated membership level change"),
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
-    @PutMapping
-    public ResponseEntity<MembershipLevelChangeDTO> updateStaff(@RequestParam Integer memberId,
+    @PutMapping("/update-member-level-change")
+    public ResponseEntity<MembershipLevelChangeDTO> updateMemberLevelChange(@RequestParam Integer memberId,
                                                                 @RequestParam LocalDate date,
                                                                 @Valid @RequestBody MembershipLevelChangeDTO membershipLevelChangeDTO) {
         MembershipLevelChangeDTO updatedMembershipLevelChange = membershipLevelChangeService.updateMembershipLevelChange(membershipLevelChangeDTO, memberId, date);
         return ResponseEntity.ok(updatedMembershipLevelChange);
+    }
+
+    @Operation(summary = "Update details of an existing member", description = "Updates membership details given new values")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Member updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @PostMapping("/update-member-details")
+    public ResponseEntity<MemberDTO> updateMemberDetails(@RequestBody MemberDTO memberDTO) {
+        MemberDTO updatedMember = memberService.updateMemberDetails(memberDTO);
+        return ResponseEntity.ok(updatedMember);
     }
 }

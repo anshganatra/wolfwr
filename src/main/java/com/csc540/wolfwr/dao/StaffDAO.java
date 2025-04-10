@@ -32,7 +32,8 @@ public class StaffDAO {
             // Convert SQL DATE to LocalDate
             staff.setDob(rs.getDate("dob").toLocalDate());
             staff.setDoj(rs.getDate("doj").toLocalDate());
-            staff.setStoreId(rs.getInt("store_ID"));
+            int storeId = rs.getInt("store_ID");
+            staff.setStoreId(rs.wasNull() ? null : storeId);
             return staff;
         }
     };
