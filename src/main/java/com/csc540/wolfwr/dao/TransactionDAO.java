@@ -106,7 +106,7 @@ public class TransactionDAO {
         + "ROUND((SUM(CASE WHEN date BETWEEN ? AND ? THEN total_price ELSE 0 END) "
         + "- SUM(CASE WHEN date BETWEEN ? AND ? THEN total_price ELSE 0 "
         + "END)) / NULLIF(SUM(CASE WHEN date BETWEEN ? AND ? THEN "
-        + "total_price ELSE 0 END), 0) * 100, 2) AS sales_growth_percentage FROM Transactions ");
+        + "total_price ELSE 0 END), 0) * 100, 2) AS sales_growth_percentage FROM Transactions t ");
 
      // Add filters to only include completed transactions and purchases
         sql.append("WHERE t.completedStatus = 1 "); // Ensure completed transactions only
