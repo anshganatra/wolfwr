@@ -15,5 +15,6 @@ public class Staff {
     private String email;
     private LocalDate dob;
     private LocalDate doj;
+    private Integer age;
     private Integer storeId; // foreign key from Stores table
 }
