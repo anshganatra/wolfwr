@@ -40,7 +40,7 @@ public class RewardDAO {
         try {
             return jdbcTemplate.queryForObject(sql, rewardRowMapper, memberId, year);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            throw new IllegalArgumentException("Invalid member ID or year");
         }
     }
 

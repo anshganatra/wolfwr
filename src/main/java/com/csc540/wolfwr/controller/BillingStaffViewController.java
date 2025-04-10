@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -176,5 +177,12 @@ public class BillingStaffViewController {
     public ResponseEntity<Void> deleteReward(@PathVariable Integer memberId, @PathVariable Integer year) {
         rewardService.deleteReward(memberId, year);
         return ResponseEntity.noContent().build();
+    }
+
+    // Exception handler for IllegalArgumentException
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        // Return 400 BadRequest with exception message
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

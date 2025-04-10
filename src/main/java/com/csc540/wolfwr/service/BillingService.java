@@ -5,6 +5,7 @@ import com.csc540.wolfwr.dao.TransactionItemDAO;
 import com.csc540.wolfwr.dto.*;
 import com.csc540.wolfwr.model.Transaction;
 import com.csc540.wolfwr.model.TransactionItem;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -182,19 +183,20 @@ public class BillingService {
         int transactionYear = transactionDate.getYear();
 
         // 5. Retrieve the current Rewards row for this member and year
-        RewardDTO rewardsDTO = rewardService.getReward(memberId, transactionYear);
-        if (rewardsDTO == null) {
-            // If no record exists yet for this year, create a new one
+        RewardDTO rewardsDTO;
+        try {
+            rewardsDTO = rewardService.getReward(memberId, transactionYear);
+            // increment the existing reward total
+            BigDecimal newTotal = rewardsDTO.getRewardTotal().add(reward);
+            rewardsDTO.setRewardTotal(newTotal);
+            rewardService.updateReward(rewardsDTO);
+        } catch (EmptyResultDataAccessException ex) {
             rewardsDTO = new RewardDTO();
             rewardsDTO.setMemberId(memberId);
             rewardsDTO.setYear(transactionYear);
             rewardsDTO.setRewardTotal(reward);
             rewardService.createReward(rewardsDTO);
-        } else {
-            // Otherwise, increment the existing reward total
-            BigDecimal newTotal = rewardsDTO.getRewardTotal().add(reward);
-            rewardsDTO.setRewardTotal(newTotal);
-            rewardService.updateReward(rewardsDTO);
         }
+
     }
 }

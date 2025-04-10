@@ -28,9 +28,6 @@ public class RewardService {
 
     public RewardDTO getReward(Integer memberId, Integer year) {
         Reward reward = rewardDAO.getByMemberAndYear(memberId, year);
-        if (reward == null) {
-            return null; // or handle it in another appropriate way, e.g., creating a new reward record
-        }
         RewardDTO dto = new RewardDTO();
         BeanUtils.copyProperties(reward, dto);
         return dto;
