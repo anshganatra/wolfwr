@@ -51,7 +51,7 @@ public class StaffService {
         BeanUtils.copyProperties(staffDTO, staff);
         staff.setAge(Period.between(staff.getDob(), LocalDate.now()).getYears());
         staffDAO.save(staff);
-        updateSpecializedTables(staff.getTitle(), staff.getStaffId());
+//        updateSpecializedTables(staff.getTitle(), staff.getStaffId());
         return staffDTO;
     }
 
@@ -85,6 +85,10 @@ public class StaffService {
                 ManagerDTO storeManagerDTO = new ManagerDTO();
                 storeManagerDTO.setManagerId(staffId);
                 managerService.createManager(storeManagerDTO);
+                break;
+
+            default:
+                // Optionally handle unknown titles
                 break;
         }
     }
