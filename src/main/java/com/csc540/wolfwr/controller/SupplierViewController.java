@@ -39,11 +39,6 @@ public class SupplierViewController {
             throw new IllegalArgumentException("Supplier ID is invalid");
         }
         try {
-            storeService.getStoreById(shipmentDTO.getStoreId());
-        } catch (EmptyResultDataAccessException ex) {
-            throw new IllegalArgumentException("Store ID is invalid");
-        }
-        try {
             productService.getProductById(shipmentDTO.getProductId());
         } catch (EmptyResultDataAccessException ex) {
             throw new IllegalArgumentException("Product ID is invalid");

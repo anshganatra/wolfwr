@@ -39,7 +39,7 @@ public class StoreDAO {
 
     // Create a new store record and return the persisted Store
     public Store save(Store store) {
-        String sql = "INSERT INTO Stores (phone, address, is_active, manager_ID) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Stores (phone, address, is_active) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -47,7 +47,6 @@ public class StoreDAO {
             ps.setString(1, store.getPhone());
             ps.setString(2, store.getAddress());
             ps.setBoolean(3, store.getIsActive());
-            ps.setInt(4, store.getManagerId());
             return ps;
         }, keyHolder);
 

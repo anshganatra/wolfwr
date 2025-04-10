@@ -10,6 +10,7 @@ import com.csc540.wolfwr.model.Store;
 import com.csc540.wolfwr.model.Shipment;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,10 +60,14 @@ public class StoreService {
 
     // Retrieve a store by its ID as a DTO
     public StoreDTO getStoreDTOById(Integer storeId) {
-        Store store = storeDAO.getStoreById(storeId);
-        StoreDTO dto = new StoreDTO();
-        BeanUtils.copyProperties(store, dto);
-        return dto;
+        try {
+            Store store = storeDAO.getStoreById(storeId);
+            StoreDTO dto = new StoreDTO();
+            BeanUtils.copyProperties(store, dto);
+            return dto;
+        } catch (EmptyResultDataAccessException ex) {
+            throw new IllegalArgumentException("Invalid Store ID");
+        }
     }
 
     // Retrieve all stores as DTOs

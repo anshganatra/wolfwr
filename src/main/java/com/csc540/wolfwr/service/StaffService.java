@@ -147,11 +147,7 @@ public class StaffService {
         if (!managerIds.contains(managerId)) {
             throw new IllegalArgumentException("Invalid managerId");
         }
-        try{
-            storeDTO = storeService.getStoreDTOById(storeId);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new IllegalArgumentException("Invalid store ID");
-        }
+        storeDTO = storeService.getStoreDTOById(storeId);
         // link the manager to the store
         StaffDTO managerStaff = getStaffById(managerId);
         managerStaff.setStoreId(storeId);

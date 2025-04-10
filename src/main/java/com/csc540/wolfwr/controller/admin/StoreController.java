@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,5 +96,12 @@ public class StoreController {
     })
     public ResponseEntity<StoreDTO> updateStoreStatus(@RequestParam(name = "storeId") Integer storeId, @RequestParam(name = "newStatus") Boolean newStatus) {
         return ResponseEntity.ok(storeService.updateStoreStatus(storeId, newStatus));
+    }
+
+    // Exception handler for IllegalArgumentException
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        // Return 400 BadRequest with exception message
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }
