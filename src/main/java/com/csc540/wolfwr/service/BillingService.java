@@ -22,14 +22,20 @@ public class BillingService {
     private final ShipmentService shipmentService;
     private final InventoryService inventoryService;
     private final ProductService productService;
+    private final MemberService memberService;
+    private final RewardService rewardService;
+    private final MemberLevelService memberLevelService;
 
-    public BillingService(TransactionDAO transactionDAO, TransactionItemDAO transactionItemDAO, DiscountService discountService, ShipmentService shipmentService, InventoryService inventoryService, ProductService productService) {
+    public BillingService(TransactionDAO transactionDAO, TransactionItemDAO transactionItemDAO, DiscountService discountService, ShipmentService shipmentService, InventoryService inventoryService, ProductService productService, MemberService memberService, RewardService rewardService, MemberLevelService memberLevelService) {
         this.transactionDAO = transactionDAO;
         this.transactionItemDAO = transactionItemDAO;
         this.discountService = discountService;
         this.shipmentService = shipmentService;
         this.inventoryService = inventoryService;
         this.productService = productService;
+        this.memberService = memberService;
+        this.rewardService = rewardService;
+        this.memberLevelService = memberLevelService;
     }
 
     private Boolean validateLineItem(BillItemDTO billItem, InventoryDTO inventoryDTO) {
@@ -147,6 +153,48 @@ public class BillingService {
         transaction.setTotalPrice(totalPrice);
         transaction.setCompletedStatus(true);
         transactionDAO.update(transaction);
+
+        updateMemberRewards(transaction.getMemberId(), transaction.getDate(), totalDiscountedPrice);
+
         return buildResponse(transaction, billItems);
+    }
+
+    private void updateMemberRewards(Integer memberId, LocalDateTime transactionDate, BigDecimal totalDiscountedPrice) {
+        // 1. Fetch the member to get the current membership level
+        MemberDTO memberDTO = memberService.getMemberById(memberId);
+        if (memberDTO == null) {
+            return;
+        }
+
+        // 2. Fetch the membership level’s cashback rate
+        String memberLevel = memberDTO.getMemberLevel();  // e.g. "Gold", "Platinum"
+        MemberLevelDTO levelDTO = memberLevelService.getMemberLevelByName(memberLevel);
+        if (levelDTO == null) {
+            return;
+        }
+        float cashbackRate = levelDTO.getCashbackRate();  // e.g. 0.05
+
+        // 3. Calculate the reward
+        // reward = totalDiscountedPrice * cashbackRate
+        BigDecimal reward = totalDiscountedPrice.multiply(BigDecimal.valueOf(cashbackRate));
+
+        // 4. Determine the transaction year
+        int transactionYear = transactionDate.getYear();
+
+        // 5. Retrieve the current Rewards row for this member and year
+        RewardDTO rewardsDTO = rewardService.getReward(memberId, transactionYear);
+        if (rewardsDTO == null) {
+            // If no record exists yet for this year, create a new one
+            rewardsDTO = new RewardDTO();
+            rewardsDTO.setMemberId(memberId);
+            rewardsDTO.setYear(transactionYear);
+            rewardsDTO.setRewardTotal(reward);
+            rewardService.createReward(rewardsDTO);
+        } else {
+            // Otherwise, increment the existing reward total
+            BigDecimal newTotal = rewardsDTO.getRewardTotal().add(reward);
+            rewardsDTO.setRewardTotal(newTotal);
+            rewardService.updateReward(rewardsDTO);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.csc540.wolfwr.dao;
 
 import com.csc540.wolfwr.model.Reward;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -36,7 +37,11 @@ public class RewardDAO {
 
     public Reward getByMemberAndYear(Integer memberId, Integer year) {
         String sql = "SELECT * FROM Rewards WHERE member_ID = ? AND year = ?";
-        return jdbcTemplate.queryForObject(sql, rewardRowMapper, memberId, year);
+        try {
+            return jdbcTemplate.queryForObject(sql, rewardRowMapper, memberId, year);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public List<Reward> getRewardsByYear(Integer year) {
