@@ -5,6 +5,8 @@ spring:
     url: 'jdbc:mariadb://classdb2.csc.ncsu.edu:3306/bvgowda'
     hikari:
       driver-class-name: org.mariadb.jdbc.Driver
+      maximum-pool-size: 5       # Set maximum pool size to 5 connections
+      minimum-idle: 2            # Maintain at least 2 idle connections
   jpa:
     hibernate:
       ddl-auto: update
