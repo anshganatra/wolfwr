@@ -9,6 +9,7 @@ import com.csc540.wolfwr.dto.TransferDTO;
 import com.csc540.wolfwr.model.Store;
 import com.csc540.wolfwr.model.Shipment;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,14 +40,17 @@ public class StoreService {
         this.transactionalDAO = transactionalDAO;
     }
 
-    // Create a new store
+    // Create a new store and return the persisted Store entity
     public StoreDTO createStore(StoreDTO storeDTO) {
         Store store = new Store();
         BeanUtils.copyProperties(storeDTO, store);
         store.setIsActive(true);
-        storeDAO.save(store);
-        return storeDTO;
+        store = storeDAO.save(store);
+        StoreDTO newStore = new StoreDTO();
+        BeanUtils.copyProperties(store, newStore);
+        return newStore;
     }
+
 
     // Retrieve a store by its ID (model)
     public Store getStoreById(Integer storeId) {
