@@ -92,7 +92,7 @@ public class InventoryService {
     }
 
     // add shipment to inventory
-    public InventoryDTO processNewInventory(Integer shipmentId) {
+    public InventoryDTO processNewInventory(Integer shipmentId, BigDecimal marketPrice) {
         ShipmentDTO linkedShipment = shipmentService.getShipmentById(shipmentId);
         if (Objects.isNull(linkedShipment)) {
             return null;
@@ -101,7 +101,7 @@ public class InventoryService {
         newInventory.setStoreId(linkedShipment.getStoreId());
         newInventory.setShipmentId(linkedShipment.getShipmentId());
         newInventory.setProductId(linkedShipment.getProductId());
-        newInventory.setMarketPrice(linkedShipment.getBuyPrice());
+        newInventory.setMarketPrice(marketPrice);
         newInventory.setProductQty(linkedShipment.getQuantity());
         InventoryDTO responseDTO = createInventory(newInventory);
         linkedShipment.setShipmentProcessed(true);
