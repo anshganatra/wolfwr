@@ -58,19 +58,18 @@ public class TransactionalDAO {
             }
 
             // 3. Insert return transaction
-            String insertTx = "INSERT INTO Transactions (store_ID, total_price, date, type, cashier_ID, member_ID, completedStatus) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String insertTx = "INSERT INTO Transactions (store_ID, total_price, date, type, cashier_ID, member_ID, completedStatus, discounted_total_price) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             int newTxId;
             try (PreparedStatement ps = conn.prepareStatement(insertTx, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, originalTx.getStoreId());
-                BigDecimal price = (item.getDiscountedPrice().compareTo(BigDecimal.ZERO) == 0) ? item.getPrice() : item.getDiscountedPrice();
-                ps.setBigDecimal(2, price);
+                ps.setBigDecimal(2, item.getPrice());
                 ps.setTimestamp(3, Timestamp.valueOf(LocalDate.now().atStartOfDay()));
                 ps.setString(4, "RETURN");
                 ps.setInt(5, returnItemDTO.getCashierId());
                 ps.setInt(6, originalTx.getMemberId());
                 ps.setBoolean(7, true);
-
+                ps.setBigDecimal(8, item.getDiscountedPrice());
                 ps.executeUpdate();
                 ResultSet rs = ps.getGeneratedKeys();
                 if (!rs.next()) throw new RuntimeException("Failed to insert return transaction");
