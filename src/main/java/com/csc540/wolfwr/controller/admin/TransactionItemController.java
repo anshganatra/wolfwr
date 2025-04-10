@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "Transaction Item API", description = "CRUD operations for transaction items")
+@Tag(name = "Admin View for Transaction Item API", description = "CRUD operations for transaction items")
 @RestController
 @RequestMapping("/admin/transaction-item")
 public class TransactionItemController {
@@ -43,9 +43,10 @@ public class TransactionItemController {
         return ResponseEntity.ok(list);
     }
 
-    @Operation(summary = "Update an existing transaction item", description = "Updates a transaction item's details")
+    @Operation(summary = "Get all transaction items between two dates", 
+               description = "Retrieves all transactions for a given customer made between two dates")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully updated transaction item"),
+            @ApiResponse(responseCode = "200", description = "Successfully returned transaction items"),
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @GetMapping("/item-report")

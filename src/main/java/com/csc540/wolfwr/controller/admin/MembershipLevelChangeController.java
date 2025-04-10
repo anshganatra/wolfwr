@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@Tag(name = "MembershipLevelChange API", description = "CRUD operations for Membership Level Changes")
+@Tag(name = "Admin View for MembershipLevelChange API", description = "CRUD operations for Membership Level Changes")
 @RestController
 @RequestMapping("/admin/membership-level-change")
 public class MembershipLevelChangeController {

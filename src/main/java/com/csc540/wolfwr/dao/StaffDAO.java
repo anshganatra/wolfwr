@@ -85,4 +85,16 @@ public class StaffDAO {
         String sql = "DELETE FROM Staff WHERE staff_ID = ?";
         return jdbcTemplate.update(sql, staffId);
     }
+    
+ // Method to get storeId of a staff member (manager) by their staffId
+    public Integer getStoreIdByStaffId(Integer staffId) {
+        String sql = "SELECT store_ID FROM Staff WHERE staff_ID = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, staffId);  // Returns storeId of the manager
+    }
+
+    // Method to assign staff to a store
+    public void assignStaffToStore(Integer staffId, Integer storeId) {
+        String sql = "UPDATE Staff SET store_ID = ? WHERE staff_ID = ?";
+        jdbcTemplate.update(sql, storeId, staffId);  // Update the storeId for the given staffId
+    }
 }

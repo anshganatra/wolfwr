@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Manager API", description = "CRUD operations for managers")
+@Tag(name = "Admin View for Manager API", description = "CRUD operations for managers")
 @RestController
 @RequestMapping("/admin/managers")
 public class ManagerController {

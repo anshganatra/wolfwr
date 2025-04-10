@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Tag(name = "Member API", description = "Member-related operations")
+@Tag(name = "Admin View for Member API", description = "Member-related operations")
 @RequestMapping("/admin/members")
 public class MemberController {
 

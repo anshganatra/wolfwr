@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Tag(name = "Shipment API", description = "CRUD operations for shipments")
+@Tag(name = "Admin View for Shipment API", description = "CRUD operations for shipments")
 @RestController
 @RequestMapping("/admin/shipments")
 public class ShipmentController {

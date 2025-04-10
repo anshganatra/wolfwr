@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Warehouse Staff API", description = "CRUD operations for warehouse staff")
+@Tag(name = "Admin View for Warehouse Staff API", description = "CRUD operations for warehouse staff")
 @RestController
 @RequestMapping("/admin/warehouse-staff")
 public class WarehouseStaffController {

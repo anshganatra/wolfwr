@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "Inventory API", description = "CRUD operations for inventory records")
+@Tag(name = "Admin View for Inventory API", description = "CRUD operations for inventory records")
 @RestController
 @RequestMapping("/admin/inventory")
 public class InventoryController {
