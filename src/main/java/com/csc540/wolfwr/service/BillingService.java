@@ -32,12 +32,17 @@ public class BillingService {
         this.productService = productService;
     }
 
-    private Boolean validateLineItem(BillItemDTO billItem) {
+    private Boolean validateLineItem(BillItemDTO billItem, InventoryDTO inventoryDTO) {
         // check if the shipment actually exists
         if (Objects.isNull(shipmentService.getShipmentById(billItem.getProductBatchId()))) {
             return Boolean.FALSE;
         }
+        // check if the line item has a qty > 0
         if (billItem.getQuantity() < 0) {
+            return Boolean.FALSE;
+        }
+        // check if we have adequate inventory of item
+        if (inventoryDTO.getProductQty() < billItem.getQuantity()) {
             return Boolean.FALSE;
         }
         return Boolean.TRUE;
@@ -111,7 +116,8 @@ public class BillingService {
         // Step 2: Create TransactionItems
         for (BillItemDTO item : billRequest.getItems()) {
             // validate if item exists in inventory
-            if (!validateLineItem(item)) {
+            InventoryDTO currentInventory = inventoryService.getInventoryByShipmentId(item.getProductBatchId());
+            if (!validateLineItem(item, currentInventory)) {
                 throw new IllegalArgumentException("Bill item has invalid ID or qty");
             }
             TransactionItem transactionItem = new TransactionItem();
@@ -119,7 +125,6 @@ public class BillingService {
             transactionItem.setProductBatchId(item.getProductBatchId());
             transactionItem.setQuantity(item.getQuantity());
             // get price from discount / shipment and set it
-            InventoryDTO currentInventory = inventoryService.getInventoryByShipmentId(item.getProductBatchId());
             transactionItem.setPrice(currentInventory.getMarketPrice());
             List<DiscountDTO> relevantDiscounts = discountService.getByProductIdOrShipmentId(currentInventory.getProductId(), item.getProductBatchId());
             if (relevantDiscounts.isEmpty()) {
