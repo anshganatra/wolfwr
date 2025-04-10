@@ -3,10 +3,14 @@ package com.csc540.wolfwr.dao;
 import com.csc540.wolfwr.model.Product;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -29,9 +33,23 @@ public class ProductDAO {
     };
 
     // Create a new product
-    public int save(Product product) {
+    public Product save(Product product) {
         String sqlQuery = "INSERT INTO Products (name) VALUES (?)";
-        return jdbcTemplate.update(sqlQuery, product.getProductName());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, product.getProductName());
+            return ps;
+        }, keyHolder);
+
+        // Assuming the ID is of type long or int
+        Number generatedId = keyHolder.getKey();
+        if (generatedId != null) {
+            product.setProductId(generatedId.intValue());
+        }
+
+        return product;
     }
 
     // Get all products
