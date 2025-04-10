@@ -104,7 +104,7 @@ public class InventoryService {
         newInventory.setMarketPrice(marketPrice);
         newInventory.setProductQty(linkedShipment.getQuantity());
         InventoryDTO responseDTO = createInventory(newInventory);
-        linkedShipment.setShipmentProcessed(false);
+        linkedShipment.setShipmentProcessed(true);
         shipmentService.updateShipment(linkedShipment);
         return responseDTO;
     }
